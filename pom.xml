@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.yy</groupId>
+		<artifactId>home</artifactId>
+		<version>1.0</version>
+		<relativePath>../yy-home/pom.xml</relativePath>
+	</parent>
+    	<artifactId>yydal</artifactId>
+    	<packaging>pom</packaging>
+    	<name>yydal</name>
+
+	<!--模块声明-->
+	<modules>
+		<module>./yydal-all</module>			<!--分布式数据库中间件所有打包-->
+		<module>./yydal-ds</module>				<!--数据源-->	
+		<module>./yydal-excutor</module>		<!--sql执行器-->		
+		<module>./yydal-merge</module>			<!--数据集合并-->
+		<module>./yydal-nm</module>				<!--分库节点管理-->
+		<module>./yydal-parse</module>			<!--sql解析器-->
+		<module>./yydal-route</module>			<!--路由规则-->
+	</modules>
+
+</project>
