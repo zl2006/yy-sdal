@@ -26,6 +26,13 @@ public class DbInstance {
         this.dbinstanceDesc = dbinstanceDesc;
     }
     
+    /**
+    * @return 返回 dbinstanceDesc
+    */
+    public String getDbinstanceDesc() {
+        return dbinstanceDesc;
+    }
+    
     /** {@inheritDoc} */
     @Override
     public String toString() {

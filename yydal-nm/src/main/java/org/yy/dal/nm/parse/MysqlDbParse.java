@@ -61,6 +61,7 @@ public class MysqlDbParse implements DbParse {
         
         DefaultNodeManager mysqlDbNodeManager = (DefaultNodeManager)dbNodeManager;
         parseDbNode(mysqlDbNodeManager);
+        parseDbTable(mysqlDbNodeManager);
         
     }
     
@@ -153,7 +154,7 @@ public class MysqlDbParse implements DbParse {
         sb.append(temp[0]).append(":");
         sb.append(temp[1]).append(":");
         sb.append(temp[2]).append(":");
-        sb.append(temp[3]);
+        sb.append(temp[3].split("/")[0]);
         DbNode dbNode = mysqlDbNodeManager.dbNodes().get(sb.toString());
         if (dbNode == null) {
             dbNode = new DbNode(sb.toString());

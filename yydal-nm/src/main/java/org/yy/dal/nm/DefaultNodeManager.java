@@ -54,6 +54,11 @@ public class DefaultNodeManager implements DbNodeManager {
     private Map<String, DbNode> dbnodes = new HashMap<String, DbNode>();
     
     /**
+     * 数据库类型
+     */
+    private String dbType;
+    
+    /**
      * 构造mysql节点管理器，支持分表定义
      * 
      * @param dbnodeListDesc 节点定义
@@ -111,18 +116,28 @@ public class DefaultNodeManager implements DbNodeManager {
         DbNodeManager nm =
             new DefaultNodeManager(
                 new MysqlDbParse(),
-                "jdbc:mysql://192.168.1.[1,2]:3306:useradmin_inst_[1-3];jdbc:mysql://192.168.1.[4-6]:3306:useradmin_inst_[1-3];jdbc:mysql://192.168.1.[7]:3306:useradmin_inst_1",
+                "jdbc:mysql://192.168.1.[1,2]:3306/useradmin_inst_[1-3];jdbc:mysql://192.168.1.[4-6]:3306/useradmin_inst_[1-3];jdbc:mysql://192.168.1.[7]:3306/useradmin_inst_1",
                 tableDescs);
         
         nm =
-            new DefaultNodeManager(new MysqlDbParse(), "jdbc:mysql://192.168.1.[1-8]:3306:useradmin_inst_[1-8]",
+            new DefaultNodeManager(new MysqlDbParse(), "jdbc:mysql://192.168.1.[1-8]:3306/useradmin_inst_[1-8]",
                 tableDescs);
         
         nm =
-            new DefaultNodeManager(new MysqlDbParse(), "jdbc:mysql://192.168.1.[1-8]:3306:useradmin_inst_[1-8]",
+            new DefaultNodeManager(new MysqlDbParse(), "jdbc:mysql://192.168.1.[1-8]:3306/useradmin_inst_[1-8]",
                 tableDescs);
         
         System.out.println(nm.dbNodes());
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public String dbType() {
+        return this.dbType;
+    }
+    
+    public void setDbType(String dbType) {
+        this.dbType = dbType;
     }
     
 }

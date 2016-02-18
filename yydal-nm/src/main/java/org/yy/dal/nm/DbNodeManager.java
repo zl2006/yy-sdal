@@ -35,4 +35,9 @@ public interface DbNodeManager {
      */
     public Map<String, DbTable> dbTables();
     
+    /**
+     * 数据库类型
+     */
+    public String dbType();
+    
 }
