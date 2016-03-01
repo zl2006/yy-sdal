@@ -406,4 +406,5 @@ public class SelectDeParser implements SelectVisitor, OrderByVisitor, SelectItem
     public void visit(AllColumns allColumns) {
         buffer.append('*');
     }
+    
 }
