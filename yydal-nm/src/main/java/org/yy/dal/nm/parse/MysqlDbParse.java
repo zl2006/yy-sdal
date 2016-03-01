@@ -11,13 +11,10 @@ package org.yy.dal.nm.parse;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.yy.dal.nm.DbInstance;
 import org.yy.dal.nm.DbNode;
-import org.yy.dal.nm.DbNodeManager;
 import org.yy.dal.nm.DbTable;
-import org.yy.dal.nm.DefaultNodeManager;
+import org.yy.dal.nm.manage.DbNodeManager;
 
 /**
 * mysql分库分表定义解析
@@ -44,8 +41,6 @@ import org.yy.dal.nm.DefaultNodeManager;
 */
 public class MysqlDbParse implements DbParse {
     
-    private static Logger logger = LoggerFactory.getLogger(MysqlDbParse.class);
-    
     //节点分隔符
     private static String DBNODE_SPLIT = ";";
     
@@ -55,18 +50,13 @@ public class MysqlDbParse implements DbParse {
     /** {@inheritDoc} */
     @Override
     public void parse(DbNodeManager dbNodeManager) {
-        if (!(dbNodeManager instanceof DefaultNodeManager)) {
-            throw new RuntimeException("不能解析非mysql节点定义");
-        }
-        
-        DefaultNodeManager mysqlDbNodeManager = (DefaultNodeManager)dbNodeManager;
-        parseDbNode(mysqlDbNodeManager);
-        parseDbTable(mysqlDbNodeManager);
+        parseDbNode(dbNodeManager);
+        parseDbTable(dbNodeManager);
         
     }
     
-    //初始化节点
-    protected void parseDbNode(DefaultNodeManager nodeManager) {
+    //解析数据库节点与实例
+    protected void parseDbNode(DbNodeManager nodeManager) {
         String dbnodeListDesc = nodeManager.getDbnodeListDesc();
         
         //Step1: 分拆节点配置描述
@@ -81,18 +71,13 @@ public class MysqlDbParse implements DbParse {
             //Step2.1:解析出节点中的变量项jdbc:mysql://192.168.1.[1,3]:3306:useradmin_inst_[1-3], 如[1,3],[1-3]
             Pattern p = Pattern.compile("\\[\\d*[,-]*\\d*]");
             Matcher m = p.matcher(dbnodeItem);
-            if (logger.isDebugEnabled()) {
-                logger.info("解析节点:" + dbnodeItem);
-            }
             String firstvarstr = null;
             if (m.find()) { //获取变量项一
                 firstvarstr = m.group();
-                logger.info("变量一:" + firstvarstr);
             }
             String secondvarstr = null; //获取变量项二
             if (m.find()) {
                 secondvarstr = m.group();
-                logger.info("变量二:" + secondvarstr);
             }
             
             //Step2.2:替换变量项,jdbc:mysql://192.168.1.[1,3]:3306:useradmin_inst_[1-3]变成jdbc:mysql://192.168.1.1:3306:useradmin_inst_1
@@ -125,15 +110,13 @@ public class MysqlDbParse implements DbParse {
                     nodeManager.dbInstances().add(tempInstance);
                     continue;
                 }
-                
             }
         }
     }
     
-    //初始化分表
-    protected void parseDbTable(DefaultNodeManager mysqlDbNodeManager) {
-        
-        for (String tableItem : mysqlDbNodeManager.getTableListDescs()) {
+    //解析数据库分表
+    protected void parseDbTable(DbNodeManager dbNodeManager) {
+        for (String tableItem : dbNodeManager.getTableListDescs()) {
             int temp = tableItem.indexOf(DBTABLE_SPLIT);
             String tableDesc = tableItem.substring(0, temp);
             String ruleDesc = tableItem.substring(temp + 1, tableItem.length());
@@ -142,23 +125,23 @@ public class MysqlDbParse implements DbParse {
             Matcher m = p.matcher(tableDesc);
             m.find();
             int tableNum = Integer.valueOf(m.group().replaceAll("[\\[\\]]", ""));
-            mysqlDbNodeManager.dbTables().put(tableName, new DbTable(tableName, tableNum, ruleDesc));
+            dbNodeManager.dbTables().put(tableName.toUpperCase(), new DbTable(tableName, tableNum, ruleDesc));
         }
         
     }
     
-    //处理生成节点,jdbc:mysql://192.168.1.1:3306
-    private DbNode processNode(DefaultNodeManager mysqlDbNodeManager, String dbnodeItem) {
+    //处理生成节点,如：jdbc:mysql://192.168.1.1:3306
+    private DbNode processNode(DbNodeManager dbNodeManager, String dbnodeItem) {
         String[] temp = dbnodeItem.split(":");
         StringBuilder sb = new StringBuilder();
         sb.append(temp[0]).append(":");
         sb.append(temp[1]).append(":");
         sb.append(temp[2]).append(":");
         sb.append(temp[3].split("/")[0]);
-        DbNode dbNode = mysqlDbNodeManager.dbNodes().get(sb.toString());
+        DbNode dbNode = dbNodeManager.dbNodes().get(sb.toString());
         if (dbNode == null) {
             dbNode = new DbNode(sb.toString());
-            mysqlDbNodeManager.dbNodes().put(sb.toString(), dbNode);
+            dbNodeManager.dbNodes().put(sb.toString().toUpperCase(), dbNode);
         }
         return dbNode;
     }
@@ -169,7 +152,6 @@ public class MysqlDbParse implements DbParse {
         if (varStr != null) {
             varStr = varStr.replaceAll("[\\[\\]]", ""); //删除中括号，由[1,2]变成1,2
             varGroup = varStr.split("[,-]");
-            
             if (varStr.indexOf("-") > 0) { //区间表示法的特殊处理
                 int start = Integer.valueOf(varGroup[0]);
                 int end = Integer.valueOf(varGroup[1]);

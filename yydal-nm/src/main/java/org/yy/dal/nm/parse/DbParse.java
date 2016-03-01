@@ -8,7 +8,7 @@
 */
 package org.yy.dal.nm.parse;
 
-import org.yy.dal.nm.DbNodeManager;
+import org.yy.dal.nm.manage.DbNodeManager;
 
 /**
 * 解析分库分表定义

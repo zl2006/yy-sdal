@@ -11,7 +11,7 @@ package org.yy.dal.nm;
 /**
 * 描述分表信息,表名_[分表数量]:分表规则名称(规则明细)
 * 例如：user_[6]:hash(user_id)
-* 实际表名为user_1   user_2 ... user_6
+* 实际表名为user_0   user_2 ... user_5
 * 
 * 如果是单表（采用表分区时）可以定义为user_[1]:hash(user_id)
 * 实际表名为user,不在有后辍
@@ -37,10 +37,18 @@ public class DbTable {
      */
     private String ruleDesc;
     
+    /**
+     * 规则名称
+     */
+    private String ruleName;
+    
     public DbTable(String tableName, int tableNum, String ruleDesc) {
         this.tableName = tableName;
         this.tableNum = tableNum;
         this.ruleDesc = ruleDesc;
+        if (ruleDesc != null && ruleDesc.indexOf("(") > 0) {
+            this.ruleName = ruleDesc.substring(0, ruleDesc.indexOf("("));
+        }
     }
     
     /**
@@ -76,6 +84,13 @@ public class DbTable {
     */
     public String getRuleDesc() {
         return ruleDesc;
+    }
+    
+    /**
+    * @return 返回 name
+    */
+    public String getRuleName() {
+        return ruleName;
     }
     
     /**

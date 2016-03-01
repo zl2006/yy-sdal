@@ -6,7 +6,7 @@
 * 修改时间:  2016年2月16日
 * 修改内容:  <修改内容>
 */
-package org.yy.dal.nm;
+package org.yy.dal.nm.manage;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -15,6 +15,9 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.yy.dal.nm.DbInstance;
+import org.yy.dal.nm.DbNode;
+import org.yy.dal.nm.DbTable;
 import org.yy.dal.nm.parse.DbParse;
 import org.yy.dal.nm.parse.MysqlDbParse;
 
@@ -30,16 +33,19 @@ public class DefaultNodeManager implements DbNodeManager {
     private static Logger logger = LoggerFactory.getLogger(DefaultNodeManager.class);
     
     /**
+     * 节点及实例描述，jdbc:mysql://192.168.1.[1,2]:3306/useradmin_inst_[1-3]
+     * 192.168.1.1表示节点
+     * useradmin_inst_1表示实例
      */
     private String dbnodeListDesc;
     
     /**
-     * 分表描述
+     * 分表描述，包括分表及路由描述 user_[8]:hash(user_id)
      */
     private List<String> tableListDescs = new ArrayList<String>();
     
     /**
-     * 数据库分库实例
+     * 数据库实例
      */
     private List<DbInstance> dbinstances = new ArrayList<DbInstance>();
     
@@ -66,6 +72,10 @@ public class DefaultNodeManager implements DbNodeManager {
      * @param tableListDesc 分表定义
      */
     public DefaultNodeManager(DbParse dbParse, String dbnodeListDesc, List<String> tableListDescs) {
+        if(logger.isDebugEnabled()){
+            logger.debug("------------------------------------------------------------");
+            logger.debug("解析节点与实例：" + dbnodeListDesc);
+        }
         this.dbnodeListDesc = dbnodeListDesc;
         this.tableListDescs = tableListDescs;
         dbParse.parse(this);
@@ -75,16 +85,10 @@ public class DefaultNodeManager implements DbNodeManager {
         }
     }
     
-    /**
-    * @return 返回 dbnodeListDesc
-    */
     public String getDbnodeListDesc() {
         return dbnodeListDesc;
     }
     
-    /**
-    * @return 返回 tableListDescs
-    */
     public List<String> getTableListDescs() {
         return tableListDescs;
     }
@@ -105,6 +109,16 @@ public class DefaultNodeManager implements DbNodeManager {
     @Override
     public Map<String, DbTable> dbTables() {
         return this.dbtables;
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public String dbType() {
+        return this.dbType;
+    }
+    
+    public void setDbType(String dbType) {
+        this.dbType = dbType;
     }
     
     public static void main(String[] args) {
@@ -128,16 +142,6 @@ public class DefaultNodeManager implements DbNodeManager {
                 tableDescs);
         
         System.out.println(nm.dbNodes());
-    }
-    
-    /** {@inheritDoc} */
-    @Override
-    public String dbType() {
-        return this.dbType;
-    }
-    
-    public void setDbType(String dbType) {
-        this.dbType = dbType;
     }
     
 }

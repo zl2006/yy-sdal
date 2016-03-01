@@ -6,10 +6,14 @@
 * 修改时间:  2016年2月16日
 * 修改内容:  <修改内容>
 */
-package org.yy.dal.nm;
+package org.yy.dal.nm.manage;
 
 import java.util.List;
 import java.util.Map;
+
+import org.yy.dal.nm.DbInstance;
+import org.yy.dal.nm.DbNode;
+import org.yy.dal.nm.DbTable;
 
 /**
 * 节点管理器
@@ -21,17 +25,17 @@ import java.util.Map;
 public interface DbNodeManager {
     
     /**
-     * 获取所有数据库实例
+     * 所有数据库实例
      */
     public List<DbInstance> dbInstances();
     
     /**
-     * 获取所有的数据库节点
+     * 所有数据库节点
      */
     public Map<String, DbNode> dbNodes();
     
     /**
-     * 获取所有的分表
+     * 所有数据库分表信息
      */
     public Map<String, DbTable> dbTables();
     
@@ -39,5 +43,15 @@ public interface DbNodeManager {
      * 数据库类型
      */
     public String dbType();
+    
+    /**
+     * 节点与实例定义
+     */
+    public String getDbnodeListDesc();
+    
+    /**
+     * 数据库分表及路由规则定义
+     */
+    public List<String> getTableListDescs();
     
 }
