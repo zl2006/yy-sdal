@@ -14,8 +14,8 @@ import javax.sql.DataSource;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.yy.dal.nm.DbInstance;
-import org.yy.dal.nm.manage.DbNodeManager;
-import org.yy.dal.nm.manage.DefaultNodeManager;
+import org.yy.dal.nm.DbNodeManager;
+import org.yy.dal.nm.DefaultNodeManager;
 import org.yy.dal.nm.parse.MysqlDbParse;
 
 import com.mchange.v2.c3p0.ComboPooledDataSource;
@@ -28,12 +28,6 @@ import com.mchange.v2.c3p0.ComboPooledDataSource;
  * @since  [yy-sdal/1.0]
  */
 public class YYDalDatasource implements DataSource {
-    
-    public static final String MYSQL_DB_TYPE = "mysql"; //mysql数据类型
-    
-    public static final String C3P0_DS_TYPE = "c3p0"; //c3p0数据源
-    
-    public static final String DBCP_DS_TYPE = "dbcp"; //dbcp数据源
     
     /**
         数据源配置属性信息，例如：
@@ -111,7 +105,7 @@ public class YYDalDatasource implements DataSource {
         this.dbType = dbType;
         this.dsType = dsType;
         
-        if (this.dbType.equals(MYSQL_DB_TYPE)) { //mysql解析
+        if (DBType.MYSQL.value().equals(this.dbType)) { //mysql解析
             dbnodeManager = new DefaultNodeManager(new MysqlDbParse(), dbnodeListDesc, tableListDescs);
         }
         else {
@@ -124,11 +118,11 @@ public class YYDalDatasource implements DataSource {
             int i = 0;
             for (DbInstance dbInstance : dbnodeManager.dbInstances()) {
                 DataSource ds = (DataSource)Class.forName(dataSourceClass).newInstance();
-                if (C3P0_DS_TYPE.equals(this.dsType)) {
+                if (DSType.C3P0.value().equals(this.dsType)) {
                     this.dataSourceConfig.remove("jdbcUrl");
                     BeanUtils.setProperty(ds, "jdbcUrl", dbInstance.getDbinstanceDesc());
                 }
-                else if (DBCP_DS_TYPE.equals(this.dsType)) {
+                else if (DSType.DBCP.value().equals(this.dsType)) {
                     this.dataSourceConfig.remove("url");
                     BeanUtils.setProperty(ds, "url", dbInstance.getDbinstanceDesc());
                 }
@@ -136,11 +130,6 @@ public class YYDalDatasource implements DataSource {
                     throw new RuntimeException("不支持的数据源");
                 }
                 BeanUtils.populate(ds, dataSourceConfig); //设置值先后顺序的原因或时间原因，c3p0可能会出错，忽略掉
-                /*Connection con = ds.getConnection();          //测试用
-                PreparedStatement ps = con.prepareStatement("select count(*) from TB_WLJ_QRCODE");
-                ResultSet rs =  ps.executeQuery();
-                rs.next();
-                System.out.println(rs.getInt(1));*/
                 datasource[i++] = ds;
             }
         }
@@ -284,8 +273,8 @@ public class YYDalDatasource implements DataSource {
         BeanUtils.populate(defaultDs, testMap);
         
         DataSource ds =
-            new YYDalDatasource(defaultDs, testMap, "com.mchange.v2.c3p0.ComboPooledDataSource", "c3p0", "mysql",
-                "jdbc:mysql://127.0.0.1:3306/useradmin_inst_[1-4]", tableDescs);
+            new YYDalDatasource(defaultDs, testMap, "com.mchange.v2.c3p0.ComboPooledDataSource", DSType.C3P0.value(),
+                DBType.MYSQL.value(), "jdbc:mysql://127.0.0.1:3306/useradmin_inst_[1-4]", tableDescs);
         
         ds.getConnection();
     }
