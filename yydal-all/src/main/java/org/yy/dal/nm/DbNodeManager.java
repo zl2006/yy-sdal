@@ -6,14 +6,10 @@
 * 修改时间:  2016年2月16日
 * 修改内容:  <修改内容>
 */
-package org.yy.dal.nm.manage;
+package org.yy.dal.nm;
 
 import java.util.List;
 import java.util.Map;
-
-import org.yy.dal.nm.DbInstance;
-import org.yy.dal.nm.DbNode;
-import org.yy.dal.nm.DbTable;
 
 /**
 * 节点管理器

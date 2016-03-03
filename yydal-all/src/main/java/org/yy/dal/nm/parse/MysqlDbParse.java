@@ -13,8 +13,8 @@ import java.util.regex.Pattern;
 
 import org.yy.dal.nm.DbInstance;
 import org.yy.dal.nm.DbNode;
+import org.yy.dal.nm.DbNodeManager;
 import org.yy.dal.nm.DbTable;
-import org.yy.dal.nm.manage.DbNodeManager;
 
 /**
 * mysql分库分表定义解析

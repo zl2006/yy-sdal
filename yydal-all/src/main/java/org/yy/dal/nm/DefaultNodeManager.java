@@ -6,7 +6,7 @@
 * 修改时间:  2016年2月16日
 * 修改内容:  <修改内容>
 */
-package org.yy.dal.nm.manage;
+package org.yy.dal.nm;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -15,9 +15,6 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.yy.dal.nm.DbInstance;
-import org.yy.dal.nm.DbNode;
-import org.yy.dal.nm.DbTable;
 import org.yy.dal.nm.parse.DbParse;
 import org.yy.dal.nm.parse.MysqlDbParse;
 
