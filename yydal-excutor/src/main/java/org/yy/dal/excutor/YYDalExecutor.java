@@ -34,19 +34,19 @@ public class YYDalExecutor {
             return;
         }
         
-        for (int i = 1; i < params.size(); ++i) {
+        for (int i = 1; i < params.size(); ++i) { //设置参数方法为1个参数时
             YYDalParameter item = params.get(i);
             if (item.getNum() == 1) {
                 statement.getClass()
                     .getMethod(item.getProperty(), int.class, item.getParam1().getClass())
                     .invoke(statement, i, item.getParam1());
             }
-            else if (item.getNum() == 2) {
+            else if (item.getNum() == 2) {//设置参数方法为2个参数时
                 statement.getClass()
                     .getMethod(item.getProperty(), int.class, item.getParam1().getClass(), item.getParam2().getClass())
                     .invoke(statement, i, item.getParam1(), item.getParam2());
             }
-            else if (item.getNum() == 3) {
+            else if (item.getNum() == 3) {//设置参数方法为3个参数时
                 statement.getClass()
                     .getMethod(item.getProperty(),
                         int.class,
@@ -55,7 +55,7 @@ public class YYDalExecutor {
                         item.getParam3().getClass())
                     .invoke(statement, i, item.getParam1(), item.getParam2(), item.getParam3());
             }
-            else if (item.getNum() == 4) {
+            else if (item.getNum() == 4) {//设置参数方法为4个参数时
                 statement.getClass()
                     .getMethod(item.getProperty(),
                         int.class,
@@ -113,4 +113,5 @@ public class YYDalExecutor {
     public boolean execute(ExecutorParam param) {
         return false;
     }
+    
 }
