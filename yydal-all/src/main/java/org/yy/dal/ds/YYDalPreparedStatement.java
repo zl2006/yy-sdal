@@ -50,8 +50,9 @@ import org.yy.dal.parse.parser.CCJSqlParserUtil;
 import org.yy.dal.parse.schema.Table;
 import org.yy.dal.parse.statement.Statement;
 import org.yy.dal.route.Partition;
-import org.yy.dal.route.PartitionUtil;
-import org.yy.dal.route.SqlUtil;
+import org.yy.dal.util.ParameterUtil;
+import org.yy.dal.util.PartitionUtil;
+import org.yy.dal.util.SqlUtil;
 
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 

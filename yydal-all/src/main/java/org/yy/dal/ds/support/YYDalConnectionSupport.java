@@ -49,6 +49,22 @@ public class YYDalConnectionSupport {
         throw new RuntimeException("SQLFeatureNotSupportedException");
     }
     
+    public CallableStatement prepareCall(String sql, int resultSetType, int resultSetConcurrency,
+        int resultSetHoldability)
+        throws SQLException {
+        throw new SQLFeatureNotSupportedException();
+    }
+    
+    public CallableStatement prepareCall(String sql, int resultSetType, int resultSetConcurrency)
+        throws SQLException {
+        throw new SQLFeatureNotSupportedException();
+    }
+    
+    public CallableStatement prepareCall(String sql)
+        throws SQLException {
+        throw new SQLFeatureNotSupportedException();
+    }
+    
     public void abort(Executor executor)
         throws SQLException {
         throw new SQLFeatureNotSupportedException();
@@ -70,6 +86,26 @@ public class YYDalConnectionSupport {
     }
     
     public Struct createStruct(String typeName, Object[] attributes)
+        throws SQLException {
+        throw new SQLFeatureNotSupportedException();
+    }
+    
+    public Savepoint setSavepoint()
+        throws SQLException {
+        throw new SQLFeatureNotSupportedException();
+    }
+    
+    public Savepoint setSavepoint(String name)
+        throws SQLException {
+        throw new SQLFeatureNotSupportedException();
+    }
+    
+    public void rollback(Savepoint savepoint)
+        throws SQLException {
+        throw new SQLFeatureNotSupportedException();
+    }
+    
+    public void releaseSavepoint(Savepoint savepoint)
         throws SQLException {
         throw new SQLFeatureNotSupportedException();
     }
@@ -114,43 +150,7 @@ public class YYDalConnectionSupport {
         throw new RuntimeException("SQLFeatureNotSupportedException");
     }
     
-    public CallableStatement prepareCall(String sql, int resultSetType, int resultSetConcurrency,
-        int resultSetHoldability)
-        throws SQLException {
-        throw new SQLFeatureNotSupportedException();
-    }
-    
-    public CallableStatement prepareCall(String sql, int resultSetType, int resultSetConcurrency)
-        throws SQLException {
-        throw new SQLFeatureNotSupportedException();
-    }
-    
-    public CallableStatement prepareCall(String sql)
-        throws SQLException {
-        throw new SQLFeatureNotSupportedException();
-    }
-    
     public String nativeSQL(String sql)
-        throws SQLException {
-        throw new SQLFeatureNotSupportedException();
-    }
-    
-    public Savepoint setSavepoint()
-        throws SQLException {
-        throw new SQLFeatureNotSupportedException();
-    }
-    
-    public Savepoint setSavepoint(String name)
-        throws SQLException {
-        throw new SQLFeatureNotSupportedException();
-    }
-    
-    public void rollback(Savepoint savepoint)
-        throws SQLException {
-        throw new SQLFeatureNotSupportedException();
-    }
-    
-    public void releaseSavepoint(Savepoint savepoint)
         throws SQLException {
         throw new SQLFeatureNotSupportedException();
     }
