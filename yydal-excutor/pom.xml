@@ -13,4 +13,28 @@
 	<packaging>jar</packaging>
 	<name>yydal-excutor</name>
 
+	<dependencies>
+		<dependency>
+			<groupId>org.yy.yydal</groupId>
+			<artifactId>yydal-parse</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.yy.yydal</groupId>
+			<artifactId>yydal-nm</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.yy.yydal</groupId>
+			<artifactId>yydal-route</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+
+		<dependency><!--反射工具类 -->
+			<groupId>commons-beanutils</groupId>
+			<artifactId>commons-beanutils-core</artifactId>
+		</dependency>
+	</dependencies>
 </project>
