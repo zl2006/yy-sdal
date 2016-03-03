@@ -291,14 +291,21 @@ public class YYDalConnection extends YYDalConnectionSupport implements Connectio
         Connection connection = ds.getConnection();
         PreparedStatement ps =
             connection.prepareStatement("SELECT * FROM TB_WLJ_QRCODE a WHERE a.QRCODE='aaa' and TEST < 'cc' or DD > 'cc'  and BB <= 123 and abs(aa)=bb(cc)");
-        ps = connection.prepareStatement("SELECT * FROM TB_WLJ_QRCODE a1, TTTT a2");
-        ps = connection.prepareStatement("UPDATE TB_WLJ_QRCODE a set a.TIMES=a.TIMES+1 WHERE a.QRCODE='bbb'");
-        ps = connection.prepareStatement("UPDATE TB_WLJ_QRCODE set TIMES=TIMES+1");
-        ps = connection.prepareStatement("INSERT TB_WLJ_QRCODE(QRCODE,ID) VALUES('ccc',123)");
-        ps = connection.prepareStatement("INSERT TB_WLJ_QRCODE(QRCODE) VALUES( abs('ccc') )");
-        ps = connection.prepareStatement("DELETE TB_WLJ_QRCODE");
-        ps = connection.prepareStatement("DELETE TB_WLJ_QRCODE a WHERE a.QRCODE='ddd'");
         ps.executeQuery();
+        ps = connection.prepareStatement("SELECT * FROM TB_WLJ_QRCODE a1, TTTT a2");
+        ps.executeQuery();
+        ps = connection.prepareStatement("UPDATE TB_WLJ_QRCODE a set a.TIMES=a.TIMES+1 WHERE a.QRCODE='bbb'");
+        ps.executeUpdate();
+        ps = connection.prepareStatement("UPDATE TB_WLJ_QRCODE set TIMES=TIMES+1");
+        ps.executeUpdate();
+        ps = connection.prepareStatement("INSERT TB_WLJ_QRCODE(QRCODE,ID) VALUES('ccc',123)");
+        ps.execute();
+        ps = connection.prepareStatement("INSERT TB_WLJ_QRCODE(QRCODE) VALUES( abs('ccc') )");
+        ps.execute();
+        ps = connection.prepareStatement("DELETE TB_WLJ_QRCODE");
+        ps.execute();
+        ps = connection.prepareStatement("DELETE TB_WLJ_QRCODE a WHERE a.QRCODE='ddd'");
+        ps.execute();
         //ResultSet rs = ps.executeQuery();
         
     }

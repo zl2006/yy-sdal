@@ -11,9 +11,12 @@ package org.yy.dal.executor;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.yy.dal.ds.YYDalPreparedStatement;
 import org.yy.dal.route.Partition;
 
 /**
@@ -25,8 +28,89 @@ import org.yy.dal.route.Partition;
 */
 public class YYDalExecutor {
     
+    public ResultSet executeQuery(ExecutorParam param, YYDalPreparedStatement dalPreparedStatement)
+        throws Exception {
+        String tableName = param.getTable().getTableName();
+        try {
+            Partition partition = param.getPartition();
+            if (partition == null) { //不使用分库分表情况下执行
+                Connection conn = param.getConns().get(0);
+                PreparedStatement ps = createPreparedStatement(param.getSql(), conn, dalPreparedStatement);
+                setParams(ps, param.getParams());
+                return ps.executeQuery();
+            }
+            else if (partition.getInstNumber() > -1) { //使用分库分表的某个实例执行
+                String tempSql = param.getSql();
+                tempSql = tempSql.replaceAll("(?i:" + tableName + ")", tableName + "_" + partition.getTableNumber());
+                Connection conn = param.getConns().get(0);
+                PreparedStatement ps = createPreparedStatement(tempSql, conn, dalPreparedStatement);
+                setParams(ps, param.getParams());
+                return ps.executeQuery();
+            }
+            else {
+                //TODO 处理多个结果集的返回
+                List<ResultSet> results = new ArrayList<ResultSet>(); //使用分为分表的所有实例执行
+                for (int i = 0; i < param.getConns().size(); ++i) {
+                    for (int j = 0; j < param.getTable().getTableNum(); ++j) {
+                        String tempSql = param.getSql().replaceAll("(?i:" + tableName + ")", tableName + "_" + j);
+                        Connection conn = param.getConns().get(i);
+                        PreparedStatement ps = createPreparedStatement(tempSql, conn, dalPreparedStatement);
+                        setParams(ps, param.getParams());
+                        results.add(ps.executeQuery());
+                    }
+                }
+            }
+        }
+        catch (SQLException ex) {
+            throw new RuntimeException(ex);
+        }
+        return null;
+    }
+    
+    public int executeUpdate(ExecutorParam param, YYDalPreparedStatement dalPreparedStatement)
+        throws Exception {
+        int total = 0;
+        String tableName = param.getTable().getTableName();
+        try {
+            Partition partition = param.getPartition();
+            if (partition == null) { //不使用分库分表情况下执行
+                Connection conn = param.getConns().get(0);
+                PreparedStatement ps = createPreparedStatement(param.getSql(), conn, dalPreparedStatement);
+                setParams(ps, param.getParams());
+                total = ps.executeUpdate();
+            }
+            else if (partition.getInstNumber() > -1) { //使用分库分表的某个实例执行
+                String tempSql = param.getSql();
+                tempSql = tempSql.replaceAll("(?i:" + tableName + ")", tableName + "_" + partition.getTableNumber());
+                Connection conn = param.getConns().get(0);
+                PreparedStatement ps = createPreparedStatement(tempSql, conn, dalPreparedStatement);
+                setParams(ps, param.getParams());
+                total = ps.executeUpdate();
+            }
+            else {
+                for (int i = 0; i < param.getConns().size(); ++i) {
+                    for (int j = 0; j < param.getTable().getTableNum(); ++j) {
+                        String tempSql = param.getSql().replaceAll("(?i:" + tableName + ")", tableName + "_" + j);
+                        Connection conn = param.getConns().get(i);
+                        PreparedStatement ps = createPreparedStatement(tempSql, conn, dalPreparedStatement);
+                        setParams(ps, param.getParams());
+                        total += ps.executeUpdate();
+                    }
+                }
+            }
+        }
+        catch (SQLException ex) {
+            throw new RuntimeException(ex);
+        }
+        return total;
+    }
+    
+    public boolean execute(ExecutorParam param) {
+        return false;
+    }
+    
     /**
-     * 设置参数
+     * 设置SQL参数
      */
     private void setParams(PreparedStatement statement, List<YYDalParameter> params)
         throws Exception {
@@ -68,50 +152,36 @@ public class YYDalExecutor {
         }
     }
     
-    public ResultSet executeQuery(ExecutorParam param) {
-        String tableName = param.getTable().getTableName();
-        try {
-            Partition partition = param.getPartition();
-            if (partition == null) { //不使用分库分表情况下执行
-                Connection conn = param.getConns().get(0);
-                PreparedStatement ps = conn.prepareStatement(param.getSql());
-                setParams(ps, param.getParams());
-                return ps.executeQuery();
-            }
-            else if (partition.getInstNumber() > -1) { //使用分库分表的某个实例执行
-                String tempSql = param.getSql();
-                tempSql = tempSql.replaceAll("(?i:" + tableName + ")", tableName + "_" + partition.getTableNumber());
-                Connection conn = param.getConns().get(0);
-                PreparedStatement ps = conn.prepareStatement(tempSql);
-                setParams(ps, param.getParams());
-                return ps.executeQuery();
-            }
-            else {
-                //TODO 处理多个结果集的返回
-                List<ResultSet> results = new ArrayList<ResultSet>(); //使用分为分表的所有实例执行
-                for (int i = 0; i < param.getConns().size(); ++i) {
-                    for (int j = 0; j < param.getTable().getTableNum(); ++j) {
-                        String tempSql = param.getSql().replaceAll("(?i:" + tableName + ")", tableName + "_" + j);
-                        Connection conn = param.getConns().get(i);
-                        PreparedStatement ps = conn.prepareStatement(tempSql);
-                        setParams(ps, param.getParams());
-                        results.add(ps.executeQuery());
-                    }
-                }
-            }
+    /**
+     * 根据不同模式创建PreparedStatement
+     */
+    private PreparedStatement createPreparedStatement(String sql, Connection conn,
+        YYDalPreparedStatement dalPreparedStatement)
+        throws SQLException {
+        if (dalPreparedStatement.getMode() == PreparedStatementMode.BASE) {
+            return conn.prepareStatement(sql);
         }
-        catch (Exception ex) {
-            throw new RuntimeException(ex);
+        else if (dalPreparedStatement.getMode() == PreparedStatementMode.RESLUTSETTYPE_1) {
+            return conn.prepareStatement(sql,
+                dalPreparedStatement.getReslutSetType(),
+                dalPreparedStatement.getResultSetConcurrency());
         }
-        return null;
-    }
-    
-    public int executeUpdate(ExecutorParam param) {
-        return 0;
-    }
-    
-    public boolean execute(ExecutorParam param) {
-        return false;
+        else if (dalPreparedStatement.getMode() == PreparedStatementMode.RESLUTSETTYPE_2) {
+            return conn.prepareStatement(sql,
+                dalPreparedStatement.getReslutSetType(),
+                dalPreparedStatement.getResultSetConcurrency(),
+                dalPreparedStatement.getResultSetHoldability());
+        }
+        else if (dalPreparedStatement.getMode() == PreparedStatementMode.AUTOGENERATEKEYS) {
+            return conn.prepareStatement(sql, dalPreparedStatement.getAutoGeneratedKeys());
+        }
+        else if (dalPreparedStatement.getMode() == PreparedStatementMode.COLUMNINDEXES) {
+            return conn.prepareStatement(sql, dalPreparedStatement.getColumnIndexes());
+        }
+        else if (dalPreparedStatement.getMode() == PreparedStatementMode.COLUMNNAMES) {
+            return conn.prepareStatement(sql, dalPreparedStatement.getColumnNames());
+        }
+        throw new SQLFeatureNotSupportedException();
     }
     
 }

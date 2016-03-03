@@ -218,7 +218,7 @@ public class YYDalPreparedStatement extends YYDalStatementSupport implements Pre
         throws SQLException {
         try {
             ExecutorParam param = initExecutorParam();
-            return new YYDalExecutor().executeQuery(param);
+            return new YYDalExecutor().executeQuery(param, this);
         }
         catch (Exception e) {
             throw new SQLException(e);
@@ -231,7 +231,7 @@ public class YYDalPreparedStatement extends YYDalStatementSupport implements Pre
         throws SQLException {
         try {
             ExecutorParam param = initExecutorParam();
-            return new YYDalExecutor().executeUpdate(param);
+            return new YYDalExecutor().executeUpdate(param, this);
         }
         catch (Exception e) {
             throw new SQLException(e);
