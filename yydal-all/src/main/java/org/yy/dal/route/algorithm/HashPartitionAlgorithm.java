@@ -6,14 +6,14 @@
 * 修改时间:  2016年2月19日
 * 修改内容:  <修改内容>
 */
-package org.yy.dal.route.partition;
+package org.yy.dal.route.algorithm;
 
 import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.beanutils.BeanUtils;
+import org.yy.dal.nm.DbNodeManager;
 import org.yy.dal.nm.DbTable;
-import org.yy.dal.nm.manage.DbNodeManager;
 import org.yy.dal.parse.expression.Expression;
 import org.yy.dal.parse.schema.Table;
 import org.yy.dal.route.Partition;

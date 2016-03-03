@@ -6,18 +6,19 @@
 * 修改时间:  2016年2月19日
 * 修改内容:  <修改内容>
 */
-package org.yy.dal.route;
+package org.yy.dal.util;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import org.yy.dal.nm.DbNodeManager;
 import org.yy.dal.nm.DbTable;
-import org.yy.dal.nm.manage.DbNodeManager;
 import org.yy.dal.parse.expression.Expression;
 import org.yy.dal.parse.schema.Table;
-import org.yy.dal.route.partition.HashPartitionAlgorithm;
-import org.yy.dal.route.partition.PartitionAlgorithm;
+import org.yy.dal.route.Partition;
+import org.yy.dal.route.algorithm.HashPartitionAlgorithm;
+import org.yy.dal.route.algorithm.PartitionAlgorithm;
 
 /**
 * 数据库分库分表工具

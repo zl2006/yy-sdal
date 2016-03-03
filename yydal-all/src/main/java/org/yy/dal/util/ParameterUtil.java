@@ -6,7 +6,7 @@
 * 修改时间:  2016年2月23日
 * 修改内容:  <修改内容>
 */
-package org.yy.dal.ds;
+package org.yy.dal.util;
 
 import java.util.ArrayList;
 import java.util.List;
