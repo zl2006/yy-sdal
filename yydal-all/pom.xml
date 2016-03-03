@@ -13,4 +13,34 @@
 	<packaging>jar</packaging>
 	<name>yydal-all</name>
 
+	<dependencies>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-log4j12</artifactId>
+		</dependency>
+		<dependency><!--反射工具类 -->
+			<groupId>commons-beanutils</groupId>
+			<artifactId>commons-beanutils-core</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.yy.yydal</groupId>
+			<artifactId>yydal-parse</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+
+		<dependency><!--c3p0连接池 -->
+			<groupId>c3p0</groupId>
+			<artifactId>c3p0</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency><!--mysql驱动 -->
+			<groupId>mysql</groupId>
+			<artifactId>mysql-connector-java</artifactId>
+			<scope>provided</scope>
+		</dependency>
+	</dependencies>
 </project> 
