@@ -19,7 +19,6 @@ import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 import java.sql.SQLXML;
 import java.sql.Savepoint;
-import java.sql.Statement;
 import java.sql.Struct;
 import java.util.Map;
 import java.util.Properties;
@@ -33,21 +32,6 @@ import java.util.concurrent.Executor;
 * @since  [yy-dal/1.0]
 */
 public class YYDalConnectionSupport {
-    
-    public Statement createStatement(int resultSetType, int resultSetConcurrency)
-        throws SQLException {
-        throw new SQLFeatureNotSupportedException();
-    }
-    
-    public Statement createStatement()
-        throws SQLException {
-        throw new SQLFeatureNotSupportedException();
-    }
-    
-    public Statement createStatement(int resultSetType, int resultSetConcurrency, int resultSetHoldability)
-        throws SQLException {
-        throw new RuntimeException("SQLFeatureNotSupportedException");
-    }
     
     public CallableStatement prepareCall(String sql, int resultSetType, int resultSetConcurrency,
         int resultSetHoldability)
@@ -112,27 +96,27 @@ public class YYDalConnectionSupport {
     
     public Clob createClob()
         throws SQLException {
-        throw new RuntimeException("SQLFeatureNotSupportedException");
+        throw new SQLFeatureNotSupportedException();
     }
     
     public Blob createBlob()
         throws SQLException {
-        throw new RuntimeException("SQLFeatureNotSupportedException");
+        throw new SQLFeatureNotSupportedException();
     }
     
     public NClob createNClob()
         throws SQLException {
-        throw new RuntimeException("SQLFeatureNotSupportedException");
+        throw new SQLFeatureNotSupportedException();
     }
     
     public SQLXML createSQLXML()
         throws SQLException {
-        throw new RuntimeException("SQLFeatureNotSupportedException");
+        throw new SQLFeatureNotSupportedException();
     }
     
     public boolean isValid(int timeout)
         throws SQLException {
-        throw new RuntimeException("SQLFeatureNotSupportedException");
+        throw new SQLFeatureNotSupportedException();
     }
     
     public void setClientInfo(String name, String value)
@@ -147,7 +131,7 @@ public class YYDalConnectionSupport {
     
     public DatabaseMetaData getMetaData()
         throws SQLException {
-        throw new RuntimeException("SQLFeatureNotSupportedException");
+        throw new SQLFeatureNotSupportedException();
     }
     
     public String nativeSQL(String sql)
@@ -157,12 +141,12 @@ public class YYDalConnectionSupport {
     
     public Map<String, Class<?>> getTypeMap()
         throws SQLException {
-        throw new RuntimeException("SQLFeatureNotSupportedException");
+        throw new SQLFeatureNotSupportedException();
     }
     
     public void setTypeMap(Map<String, Class<?>> map)
         throws SQLException {
-        throw new RuntimeException("SQLFeatureNotSupportedException");
+        throw new SQLFeatureNotSupportedException();
     }
     
     public void setNetworkTimeout(Executor executor, int milliseconds)
