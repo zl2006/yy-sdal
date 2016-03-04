@@ -16,6 +16,8 @@ import java.sql.SQLFeatureNotSupportedException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.yy.dal.ds.PreparedStatementMode;
+import org.yy.dal.ds.YYDalParameter;
 import org.yy.dal.ds.YYDalPreparedStatement;
 import org.yy.dal.route.Partition;
 
@@ -28,7 +30,7 @@ import org.yy.dal.route.Partition;
 */
 public class YYDalExecutor {
     
-    public ResultSet executeQuery(ExecutorParam param, YYDalPreparedStatement dalPreparedStatement)
+    public ResultSet executeQuery(YYDalExecutorParam param, YYDalPreparedStatement dalPreparedStatement)
         throws Exception {
         String tableName = param.getTable().getTableName();
         try {
@@ -67,7 +69,7 @@ public class YYDalExecutor {
         return null;
     }
     
-    public int executeUpdate(ExecutorParam param, YYDalPreparedStatement dalPreparedStatement)
+    public int executeUpdate(YYDalExecutorParam param, YYDalPreparedStatement dalPreparedStatement)
         throws Exception {
         int total = 0;
         String tableName = param.getTable().getTableName();
@@ -105,7 +107,7 @@ public class YYDalExecutor {
         return total;
     }
     
-    public boolean execute(ExecutorParam param) {
+    public boolean execute(YYDalExecutorParam param) {
         return false;
     }
     

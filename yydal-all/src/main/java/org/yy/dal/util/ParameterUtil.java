@@ -11,7 +11,7 @@ package org.yy.dal.util;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.yy.dal.executor.YYDalParameter;
+import org.yy.dal.ds.YYDalParameter;
 
 /**
 * 参数处理工具

@@ -11,6 +11,7 @@ package org.yy.dal.executor;
 import java.sql.Connection;
 import java.util.List;
 
+import org.yy.dal.ds.YYDalParameter;
 import org.yy.dal.nm.DbTable;
 import org.yy.dal.parse.statement.Statement;
 import org.yy.dal.route.Partition;
@@ -22,7 +23,7 @@ import org.yy.dal.route.Partition;
 * @version  [1.0, 2016年2月23日]
 * @since  [yy-sdal/1.0]
 */
-public class ExecutorParam {
+public class YYDalExecutorParam {
     
     //所使用的连接
     private List<Connection> conns;
@@ -44,7 +45,7 @@ public class ExecutorParam {
     
     /** 
     */
-    public ExecutorParam(List<Connection> conns, List<YYDalParameter> params, String sql, Statement statement,
+    public YYDalExecutorParam(List<Connection> conns, List<YYDalParameter> params, String sql, Statement statement,
         DbTable table, Partition partition) {
         this.sql = sql;
         this.statement = statement;

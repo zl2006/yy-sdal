@@ -6,7 +6,9 @@
 * 修改时间:  2016年2月23日
 * 修改内容:  <修改内容>
 */
-package org.yy.dal.executor;
+package org.yy.dal.ds;
+
+import java.sql.PreparedStatement;
 
 /**
 * 参数

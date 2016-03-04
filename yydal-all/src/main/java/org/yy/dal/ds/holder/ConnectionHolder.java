@@ -50,23 +50,18 @@ public class ConnectionHolder implements Connection {
             if (this.status.isAutoCommit() != null) {
                 connection.setAutoCommit(status.isAutoCommit());
             }
-            
             if (this.status.isReadOnly() != null) {
                 connection.setReadOnly(status.isReadOnly());
             }
-            
             if (this.status.getCatalog() != null) {
                 connection.setCatalog(status.getCatalog());
             }
-            
             if (this.status.getTransactionIsolation() != null) {
                 connection.setTransactionIsolation(status.getTransactionIsolation());
             }
-            
             if (this.status.getHoldability() != null) {
                 connection.setHoldability(status.getHoldability());
             }
-            
             if (this.status.getSchema() != null) {
                 connection.setSchema(status.getSchema());
             }
@@ -74,7 +69,6 @@ public class ConnectionHolder implements Connection {
         catch (SQLException ex) {
             throw new RuntimeException(ex);
         }
-        
     }
     
     /** {@inheritDoc} */

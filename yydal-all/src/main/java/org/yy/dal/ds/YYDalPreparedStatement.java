@@ -39,10 +39,8 @@ import javax.sql.DataSource;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.yy.dal.ds.support.YYDalStatementSupport;
-import org.yy.dal.executor.ExecutorParam;
-import org.yy.dal.executor.PreparedStatementMode;
 import org.yy.dal.executor.YYDalExecutor;
-import org.yy.dal.executor.YYDalParameter;
+import org.yy.dal.executor.YYDalExecutorParam;
 import org.yy.dal.nm.DbTable;
 import org.yy.dal.parse.JSQLParserException;
 import org.yy.dal.parse.expression.Expression;
@@ -217,7 +215,7 @@ public class YYDalPreparedStatement extends YYDalStatementSupport implements Pre
     public ResultSet executeQuery()
         throws SQLException {
         try {
-            ExecutorParam param = initExecutorParam();
+            YYDalExecutorParam param = initExecutorParam();
             return new YYDalExecutor().executeQuery(param, this);
         }
         catch (Exception e) {
@@ -230,7 +228,7 @@ public class YYDalPreparedStatement extends YYDalStatementSupport implements Pre
     public int executeUpdate()
         throws SQLException {
         try {
-            ExecutorParam param = initExecutorParam();
+            YYDalExecutorParam param = initExecutorParam();
             return new YYDalExecutor().executeUpdate(param, this);
         }
         catch (Exception e) {
@@ -243,7 +241,7 @@ public class YYDalPreparedStatement extends YYDalStatementSupport implements Pre
     public boolean execute()
         throws SQLException {
         try {
-            ExecutorParam param = initExecutorParam();
+            YYDalExecutorParam param = initExecutorParam();
             return new YYDalExecutor().execute(param);
         }
         catch (Exception e) {
@@ -251,7 +249,7 @@ public class YYDalPreparedStatement extends YYDalStatementSupport implements Pre
         }
     }
     
-    protected ExecutorParam initExecutorParam()
+    protected YYDalExecutorParam initExecutorParam()
         throws JSQLParserException, SQLException {
         //1, sql参数填充，以便分析sql时能正常取出分表字段的值
         String fillsql = ParameterUtil.fillParam(this.sql, this.paramValues);
@@ -267,8 +265,8 @@ public class YYDalPreparedStatement extends YYDalStatementSupport implements Pre
         List<Connection> conns = fetchConnection(partition, connection);
         
         //4, 执行并返回结果 
-        ExecutorParam param =
-            new ExecutorParam(conns, this.paramValues, this.sql, CCJSqlParserUtil.parse(this.sql), dbtable, partition);
+        YYDalExecutorParam param =
+            new YYDalExecutorParam(conns, this.paramValues, this.sql, CCJSqlParserUtil.parse(this.sql), dbtable, partition);
         return param;
     }
     

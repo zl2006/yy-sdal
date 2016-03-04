@@ -6,7 +6,7 @@
 * 修改时间:  2016年3月3日
 * 修改内容:  <修改内容>
 */
-package org.yy.dal.executor;
+package org.yy.dal.ds;
 
 /**
 * 创建PreparedStatement的模式
