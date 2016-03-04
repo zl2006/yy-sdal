@@ -16,9 +16,9 @@ import java.sql.SQLFeatureNotSupportedException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.yy.dal.ds.PreparedStatementMode;
 import org.yy.dal.ds.YYDalParameter;
 import org.yy.dal.ds.YYDalPreparedStatement;
+import org.yy.dal.ds.constants.PreparedStatementMode;
 import org.yy.dal.route.Partition;
 
 /**

@@ -1,4 +1,5 @@
 /*
+
 * 文 件 名:  PreparedStatementType.java
 * 版    权:  YY Technologies Co., Ltd. Copyright 2012-2013,  All rights reserved
 * 描    述:  创建PreparedStatement的模式
@@ -6,14 +7,14 @@
 * 修改时间:  2016年3月3日
 * 修改内容:  <修改内容>
 */
-package org.yy.dal.ds;
+package org.yy.dal.ds.constants;
 
 /**
 * 创建PreparedStatement的模式
 * 
 * @author  zhouliang
-* @version  [版本号, 2016年3月3日]
-* @since  [产品/模块版本]
+* @version  [1.0, 2016年3月3日]
+* @since  [yy-sdal/1.0]
 */
 public enum PreparedStatementMode {
     BASE, //prepareStatement(String sql)

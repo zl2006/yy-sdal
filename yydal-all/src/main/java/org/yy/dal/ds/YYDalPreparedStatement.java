@@ -38,6 +38,7 @@ import java.util.Map;
 import javax.sql.DataSource;
 
 import org.apache.commons.beanutils.BeanUtils;
+import org.yy.dal.ds.constants.PreparedStatementMode;
 import org.yy.dal.ds.support.YYDalStatementSupport;
 import org.yy.dal.executor.YYDalExecutor;
 import org.yy.dal.executor.YYDalExecutorParam;

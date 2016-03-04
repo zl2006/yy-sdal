@@ -12,6 +12,7 @@ import java.util.Map;
 import javax.sql.DataSource;
 
 import org.apache.commons.beanutils.BeanUtils;
+import org.yy.dal.ds.constants.ConnectionStatus;
 import org.yy.dal.ds.holder.ConnectionHolder;
 import org.yy.dal.ds.support.YYDalConnectionSupport;
 
@@ -30,6 +31,11 @@ public class YYDalConnection extends YYDalConnectionSupport implements Connectio
      * 数据源
      */
     private YYDalDatasource datasource;
+    
+    /**
+     * 连接关闭
+     */
+    private boolean close = false;
     
     /**
      * 连接状态
@@ -99,13 +105,13 @@ public class YYDalConnection extends YYDalConnectionSupport implements Connectio
         for (String key : connection.keySet()) {
             connection.get(key).close();
         }
-        status.setClose(true);
+        this.close = true;
     }
     
     @Override
     public boolean isClosed()
         throws SQLException {
-        return status.isClose();
+        return this.close;
     }
     
     @Override

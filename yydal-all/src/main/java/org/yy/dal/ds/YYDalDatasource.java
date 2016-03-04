@@ -13,6 +13,8 @@ import java.util.logging.Logger;
 import javax.sql.DataSource;
 
 import org.apache.commons.beanutils.BeanUtils;
+import org.yy.dal.ds.constants.DBType;
+import org.yy.dal.ds.constants.DSType;
 import org.yy.dal.nm.DbInstance;
 import org.yy.dal.nm.DbNodeManager;
 import org.yy.dal.nm.DefaultNodeManager;

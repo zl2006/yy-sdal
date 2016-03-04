@@ -8,8 +8,6 @@
 */
 package org.yy.dal.ds;
 
-import java.sql.PreparedStatement;
-
 /**
 * 参数
 * 

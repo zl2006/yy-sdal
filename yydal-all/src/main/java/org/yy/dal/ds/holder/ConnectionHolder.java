@@ -27,7 +27,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.Executor;
 
-import org.yy.dal.ds.ConnectionStatus;
+import org.yy.dal.ds.constants.ConnectionStatus;
 
 /**
 * 数据库连接代理类
@@ -38,14 +38,20 @@ import org.yy.dal.ds.ConnectionStatus;
 */
 public class ConnectionHolder implements Connection {
     
+    /**
+     * 实际连接
+     */
     private Connection connection;
     
+    /**
+     * 连接状态
+     */
     private ConnectionStatus status;
     
+    //实际获取连接时重置在YYDalConnection中设置的参数
     public ConnectionHolder(Connection connection, ConnectionStatus status) {
         this.connection = connection;
         this.status = status;
-        
         try {
             if (this.status.isAutoCommit() != null) {
                 connection.setAutoCommit(status.isAutoCommit());
