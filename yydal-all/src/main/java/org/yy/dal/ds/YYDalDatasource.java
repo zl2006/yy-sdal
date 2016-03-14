@@ -89,6 +89,7 @@ public class YYDalDatasource implements DataSource {
     /**
      * 构造数据源
      * 
+     * @param defaultDataSource 默认数据源，存储非分表的数据
      * @param dataSourceConfig 数据源配置
      * @param dataSourceClass 数据源类
      * @param dsType 数据源类型， 暂时支持c3p0, dbcp
@@ -98,7 +99,6 @@ public class YYDalDatasource implements DataSource {
      */
     public YYDalDatasource(DataSource defaultDataSource, Map<String, String> dataSourceConfig, String dataSourceClass,
         String dsType, String dbType, String dbnodeListDesc, List<String> tableListDescs) {
-        
         this.defaultDataSource = defaultDataSource;
         this.dataSourceConfig = dataSourceConfig;
         this.dataSourceClass = dataSourceClass;
@@ -111,7 +111,7 @@ public class YYDalDatasource implements DataSource {
             dbnodeManager = new DefaultNodeManager(new MysqlDbParse(), dbnodeListDesc, tableListDescs);
         }
         else {
-            throw new RuntimeException("不支持的数据库类型");
+            throw new RuntimeException("不支持的数据库类型:" + this.dbType);
         }
         
         //根据数据库实例数产生数据源
@@ -129,7 +129,7 @@ public class YYDalDatasource implements DataSource {
                     BeanUtils.setProperty(ds, "url", dbInstance.getDbinstanceDesc());
                 }
                 else {
-                    throw new RuntimeException("不支持的数据源");
+                    throw new RuntimeException("不支持的数据源:" + this.dsType);
                 }
                 BeanUtils.populate(ds, dataSourceConfig); //设置值先后顺序的原因或时间原因，c3p0可能会出错，忽略掉
                 datasource[i++] = ds;
@@ -215,38 +215,67 @@ public class YYDalDatasource implements DataSource {
     }
     
     /**
-     * 获取节点及实例描述
+     * 节点及实例描述
      */
     public String getDbnodeListDesc() {
         return dbnodeListDesc;
     }
     
     /**
-     * 获取分表及规则描述
+     * 分表及规则描述
      */
     public List<String> getTableListDescs() {
         return tableListDescs;
     }
     
     /**
-     * 获取分库分表节点管理器
+     * 分库分表节点管理器
      */
     public DbNodeManager getDbnodeManager() {
         return dbnodeManager;
     }
     
     /**
-    * 获取默认数据源, 非分库分表的数据存储在此数据源中
+    * 默认数据源, 非分库分表的数据存储在此数据源中
     */
     public DataSource getDefaultDataSource() {
         return defaultDataSource;
     }
     
     /**
-    * 获取所有分库分表数据源全集
+    * 所有分库分表数据源
     */
     public DataSource[] getDatasource() {
         return datasource;
+    }
+    
+    /**
+     * 数据源配置
+     */
+    public Map<String, String> getDataSourceConfig() {
+        return dataSourceConfig;
+    }
+    
+    /**
+     * 数据库类型
+     */
+    public String getDbType() {
+        return dbType;
+    }
+    
+    /**
+     * 数据源类型
+     */
+    public String getDsType() {
+        return dsType;
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public String toString() {
+        return "YYDalDatasource [dataSourceConfig=" + dataSourceConfig + ", dataSourceClass=" + dataSourceClass
+            + ", dbnodeListDesc=" + dbnodeListDesc + ", tableListDescs=" + tableListDescs + ", dbType=" + dbType
+            + ", dsType=" + dsType + "]";
     }
     
     public static void main(String[] args)
@@ -279,5 +308,7 @@ public class YYDalDatasource implements DataSource {
                 DBType.MYSQL.value(), "jdbc:mysql://127.0.0.1:3306/useradmin_inst_[1-4]", tableDescs);
         
         ds.getConnection();
+        
+        System.out.println(ds);
     }
 }
