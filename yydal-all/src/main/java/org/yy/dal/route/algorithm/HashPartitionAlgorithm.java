@@ -47,6 +47,7 @@ public class HashPartitionAlgorithm implements PartitionAlgorithm {
         Set<String> tableNames = tables.keySet();
         try {
             for (String tableName : tableNames) {
+                tableName = tableName.replace("`", "");
                 if (dbtables.get(tableName) != null) { //为分库表时
                     DbTable dbtable = dbtables.get(tableName);
                     Table table = tables.get(tableName);

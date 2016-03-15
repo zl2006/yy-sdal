@@ -71,6 +71,9 @@ public class ConnectionHolder implements Connection {
             if (this.status.getSchema() != null) {
                 connection.setSchema(status.getSchema());
             }
+            if(this.status.getClientProperties().size() > 0){
+                connection.setClientInfo(status.getClientProperties());
+            }
         }
         catch (SQLException ex) {
             throw new RuntimeException(ex);

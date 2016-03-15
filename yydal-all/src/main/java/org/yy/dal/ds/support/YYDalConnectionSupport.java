@@ -14,14 +14,12 @@ import java.sql.CallableStatement;
 import java.sql.Clob;
 import java.sql.DatabaseMetaData;
 import java.sql.NClob;
-import java.sql.SQLClientInfoException;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 import java.sql.SQLXML;
 import java.sql.Savepoint;
 import java.sql.Struct;
 import java.util.Map;
-import java.util.Properties;
 import java.util.concurrent.Executor;
 
 /**
@@ -45,21 +43,6 @@ public class YYDalConnectionSupport {
     }
     
     public CallableStatement prepareCall(String sql)
-        throws SQLException {
-        throw new SQLFeatureNotSupportedException();
-    }
-    
-    public void abort(Executor executor)
-        throws SQLException {
-        throw new SQLFeatureNotSupportedException();
-    }
-    
-    public String getClientInfo(String name)
-        throws SQLException {
-        throw new SQLFeatureNotSupportedException();
-    }
-    
-    public Properties getClientInfo()
         throws SQLException {
         throw new SQLFeatureNotSupportedException();
     }
@@ -119,22 +102,7 @@ public class YYDalConnectionSupport {
         throw new SQLFeatureNotSupportedException();
     }
     
-    public void setClientInfo(String name, String value)
-        throws SQLClientInfoException {
-        throw new RuntimeException("SQLFeatureNotSupportedException");
-    }
-    
-    public void setClientInfo(Properties properties)
-        throws SQLClientInfoException {
-        throw new RuntimeException("SQLFeatureNotSupportedException");
-    }
-    
     public DatabaseMetaData getMetaData()
-        throws SQLException {
-        throw new SQLFeatureNotSupportedException();
-    }
-    
-    public String nativeSQL(String sql)
         throws SQLException {
         throw new SQLFeatureNotSupportedException();
     }

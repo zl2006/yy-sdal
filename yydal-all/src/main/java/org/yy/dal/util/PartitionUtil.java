@@ -48,6 +48,7 @@ public final class PartitionUtil {
         Set<String> tableNames = tables.keySet();
         
         for (String tableName : tableNames) {
+            tableName = tableName.replace("`", "");
             if (dbtables.get(tableName) != null) {
                 return dbtables.get(tableName);
             }

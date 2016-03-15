@@ -32,7 +32,6 @@ public class YYDalExecutor {
     
     public ResultSet executeQuery(YYDalExecutorParam param, YYDalPreparedStatement dalPreparedStatement)
         throws Exception {
-        String tableName = param.getTable().getTableName();
         try {
             Partition partition = param.getPartition();
             if (partition == null) { //不使用分库分表情况下执行
@@ -42,6 +41,7 @@ public class YYDalExecutor {
                 return ps.executeQuery();
             }
             else if (partition.getInstNumber() > -1) { //使用分库分表的某个实例执行
+                String tableName = param.getTable().getTableName();
                 String tempSql = param.getSql();
                 tempSql = tempSql.replaceAll("(?i:" + tableName + ")", tableName + "_" + partition.getTableNumber());
                 Connection conn = param.getConns().get(0);
@@ -51,6 +51,7 @@ public class YYDalExecutor {
             }
             else {
                 //TODO 处理多个结果集的返回
+                String tableName = param.getTable().getTableName();
                 List<ResultSet> results = new ArrayList<ResultSet>(); //使用分为分表的所有实例执行
                 for (int i = 0; i < param.getConns().size(); ++i) {
                     for (int j = 0; j < param.getTable().getTableNum(); ++j) {
@@ -72,7 +73,7 @@ public class YYDalExecutor {
     public int executeUpdate(YYDalExecutorParam param, YYDalPreparedStatement dalPreparedStatement)
         throws Exception {
         int total = 0;
-        String tableName = param.getTable().getTableName();
+        
         try {
             Partition partition = param.getPartition();
             if (partition == null) { //不使用分库分表情况下执行
@@ -82,6 +83,7 @@ public class YYDalExecutor {
                 total = ps.executeUpdate();
             }
             else if (partition.getInstNumber() > -1) { //使用分库分表的某个实例执行
+                String tableName = param.getTable().getTableName();
                 String tempSql = param.getSql();
                 tempSql = tempSql.replaceAll("(?i:" + tableName + ")", tableName + "_" + partition.getTableNumber());
                 Connection conn = param.getConns().get(0);
@@ -90,6 +92,7 @@ public class YYDalExecutor {
                 total = ps.executeUpdate();
             }
             else {
+                String tableName = param.getTable().getTableName();
                 for (int i = 0; i < param.getConns().size(); ++i) {
                     for (int j = 0; j < param.getTable().getTableNum(); ++j) {
                         String tempSql = param.getSql().replaceAll("(?i:" + tableName + ")", tableName + "_" + j);
@@ -107,8 +110,46 @@ public class YYDalExecutor {
         return total;
     }
     
-    public boolean execute(YYDalExecutorParam param) {
-        return false;
+    public boolean execute(YYDalExecutorParam param, YYDalPreparedStatement dalPreparedStatement)
+        throws Exception {
+        boolean result = false;
+        
+        try {
+            Partition partition = param.getPartition();
+            if (partition == null) { //不使用分库分表情况下执行
+                Connection conn = param.getConns().get(0);
+                PreparedStatement ps = createPreparedStatement(param.getSql(), conn, dalPreparedStatement);
+                setParams(ps, param.getParams());
+                result = ps.execute();
+            }
+            else if (partition.getInstNumber() > -1) { //使用分库分表的某个实例执行
+                String tableName = param.getTable().getTableName();
+                String tempSql = param.getSql();
+                tempSql = tempSql.replaceAll("(?i:" + tableName + ")", tableName + "_" + partition.getTableNumber());
+                Connection conn = param.getConns().get(0);
+                PreparedStatement ps = createPreparedStatement(tempSql, conn, dalPreparedStatement);
+                setParams(ps, param.getParams());
+                result = ps.execute();
+            }
+            else {
+                String tableName = param.getTable().getTableName();
+                for (int i = 0; i < param.getConns().size(); ++i) {
+                    for (int j = 0; j < param.getTable().getTableNum(); ++j) {
+                        String tempSql = param.getSql().replaceAll("(?i:" + tableName + ")", tableName + "_" + j);
+                        Connection conn = param.getConns().get(i);
+                        PreparedStatement ps = createPreparedStatement(tempSql, conn, dalPreparedStatement);
+                        setParams(ps, param.getParams());
+                        if (ps.execute()) {
+                            result = true;
+                        }
+                    }
+                }
+            }
+        }
+        catch (SQLException ex) {
+            throw new RuntimeException(ex);
+        }
+        return result;
     }
     
     /**

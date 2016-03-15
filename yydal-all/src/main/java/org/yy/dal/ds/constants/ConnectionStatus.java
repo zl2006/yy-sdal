@@ -8,6 +8,8 @@
 */
 package org.yy.dal.ds.constants;
 
+import java.util.Properties;
+
 /**
 * 记录连接状态，以便实际获取连接时重置状态。在ConnectionHolder的构造函数中重置
 * 
@@ -41,6 +43,8 @@ public class ConnectionStatus {
      * 
      */
     private Integer holdability;
+    
+    private Properties clientProperties = new Properties();
     
     /**
      * 数据库schema
@@ -93,6 +97,14 @@ public class ConnectionStatus {
     
     public void setSchema(String schema) {
         this.schema = schema;
+    }
+    
+    public Properties getClientProperties() {
+        return clientProperties;
+    }
+    
+    public void setClientProperties(Properties clientProperties) {
+        this.clientProperties = clientProperties;
     }
     
 }

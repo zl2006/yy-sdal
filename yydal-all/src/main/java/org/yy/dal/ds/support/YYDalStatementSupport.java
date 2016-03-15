@@ -54,8 +54,8 @@ public class YYDalStatementSupport {
             if (temp == null) {
                 temp = new ConnectionHolder(ds.getDefaultDataSource().getConnection(), connection.getStatus());
                 connection.put(DEFAULT_CONNECT, temp);
-                conns.add(temp);
             }
+            conns.add(temp);
         }
         else if (partition.getInstNumber() == -1) {//返回[-1,-1]时使用分库所有实例
             for (int i = 0; i < ds.getDatasource().length; ++i) {
@@ -63,8 +63,8 @@ public class YYDalStatementSupport {
                 if (temp == null) {
                     temp = new ConnectionHolder(ds.getDatasource()[i].getConnection(), connection.getStatus());
                     connection.put(i + "", temp);
-                    conns.add(temp);
                 }
+                conns.add(temp);
             }
         }
         else {//返回其它值时使用其中一个实例
@@ -74,12 +74,11 @@ public class YYDalStatementSupport {
                     new ConnectionHolder(ds.getDatasource()[partition.getInstNumber()].getConnection(),
                         connection.getStatus());
                 connection.put(partition.getInstNumber() + "", temp);
-                conns.add(temp);
             }
+            conns.add(temp);
         }
         return conns;
     }
-    
     
     public int getMaxFieldSize()
         throws SQLException {

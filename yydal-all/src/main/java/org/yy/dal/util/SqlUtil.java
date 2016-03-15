@@ -149,7 +149,7 @@ public final class SqlUtil {
             return result;
         }
         for (Table table : tables) {
-            result.put(table.getName().toUpperCase(), table);
+            result.put(table.getName().toUpperCase().replace("`", ""), table);
         }
         return result;
     }
@@ -159,6 +159,7 @@ public final class SqlUtil {
         Map<String, Expression> result = new HashMap<String, Expression>();
         int i = 0;
         List<Expression> expressions = ((ExpressionList)insert.getItemsList()).getExpressions(); //插入的值
+        
         for (Column column : insert.getColumns()) { //插入的列名
             Expression temp = expressions.get(i);
             //if (temp.getClass().getName().endsWith("Value") || temp instanceof JdbcParameter
@@ -166,7 +167,7 @@ public final class SqlUtil {
             if (temp.getClass().getName().endsWith("Value")) { //插入的值为【值、?、命名参数】时才记录
                 String name = column.toString();
                 //Object value = BeanUtils.getProperty(expressions.get(i), "value");
-                result.put(name.toUpperCase(), column);
+                result.put(name.toUpperCase().replace("`", ""), expressions.get(i));
             }
             ++i;
         }

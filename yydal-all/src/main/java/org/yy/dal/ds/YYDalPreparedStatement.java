@@ -67,7 +67,7 @@ public class YYDalPreparedStatement extends YYDalStatementSupport implements Pre
     //原始sql
     private String sql;
     
-    //数据源
+    //数据源π
     private YYDalDatasource datasource;
     
     //连接
@@ -171,22 +171,6 @@ public class YYDalPreparedStatement extends YYDalStatementSupport implements Pre
         return this.connection;
     }
     
-    //不用关闭
-    /** {@inheritDoc} */
-    @Override
-    public void close()
-        throws SQLException {
-        return;
-    }
-    
-    //不用关闭
-    /** {@inheritDoc} */
-    @Override
-    public boolean isClosed()
-        throws SQLException {
-        return false;
-    }
-    
     /** {@inheritDoc} */
     @Override
     public ResultSet executeQuery(String sql)
@@ -243,7 +227,7 @@ public class YYDalPreparedStatement extends YYDalStatementSupport implements Pre
         throws SQLException {
         try {
             YYDalExecutorParam param = initExecutorParam();
-            return new YYDalExecutor().execute(param);
+            return new YYDalExecutor().execute(param, this);
         }
         catch (Exception e) {
             throw new SQLException(e);
@@ -252,22 +236,23 @@ public class YYDalPreparedStatement extends YYDalStatementSupport implements Pre
     
     protected YYDalExecutorParam initExecutorParam()
         throws JSQLParserException, SQLException {
-        //1, sql参数填充，以便分析sql时能正常取出分表字段的值
+        //Step 1, sql参数填充，以便分析sql时能正常取出分表字段的值
         String fillsql = ParameterUtil.fillParam(this.sql, this.paramValues);
         Statement statement = CCJSqlParserUtil.parse(fillsql);
         
-        //2, 获取最终选择的实例及分表信息
+        //Step 2, 获取最终选择的实例及分表信息
         Map<String, Table> tables = SqlUtil.getTables(statement); //取语句中用到的表
         Map<String, Expression> whereColumns = SqlUtil.getWhere(statement); //取语句中where的列
         DbTable dbtable = PartitionUtil.partitionTable(tables, datasource.getDbnodeManager()); //取到第一个分库表信息，TODO 有bug,不能是第一个，要取出所有的，并取出参数值范围最小的那个
         Partition partition = PartitionUtil.partition(tables, whereColumns, datasource.getDbnodeManager());
         
-        //3, 获取当前sql所要的数据库连接
+        //Step 3, 获取当前sql所要的数据库连接
         List<Connection> conns = fetchConnection(partition, connection);
         
-        //4, 执行并返回结果 
+        //Step 4, 执行并返回结果 
         YYDalExecutorParam param =
-            new YYDalExecutorParam(conns, this.paramValues, this.sql, CCJSqlParserUtil.parse(this.sql), dbtable, partition);
+            new YYDalExecutorParam(conns, this.paramValues, this.sql, CCJSqlParserUtil.parse(this.sql), dbtable,
+                partition);
         return param;
     }
     
@@ -658,6 +643,22 @@ public class YYDalPreparedStatement extends YYDalStatementSupport implements Pre
         return columnNames;
     }
     
+    //不用关闭
+    /** {@inheritDoc} */
+    @Override
+    public void close()
+        throws SQLException {
+        return;
+    }
+    
+    //不用关闭
+    /** {@inheritDoc} */
+    @Override
+    public boolean isClosed()
+        throws SQLException {
+        return false;
+    }
+    
     protected void init(String sql) {
         this.sql = sql;
         int paramnum = ParameterUtil.countParams(sql) + 1;
@@ -681,7 +682,7 @@ public class YYDalPreparedStatement extends YYDalStatementSupport implements Pre
         
         List<String> tableDescs = new ArrayList<String>();
         tableDescs.add("TB_USER_INFO_[8]:hash(USER_ID)");
-        tableDescs.add("TB_WLJ_QRCODE_[8]:hash(QRCODE)");
+        tableDescs.add("TB_PQ_QRCODE_[8]:hash(QRCODE)");
         
         com.mchange.v2.c3p0.ComboPooledDataSource defaultDs = new ComboPooledDataSource();
         BeanUtils.populate(defaultDs, testMap);
@@ -690,12 +691,12 @@ public class YYDalPreparedStatement extends YYDalStatementSupport implements Pre
                 "jdbc:mysql://127.0.0.1:3306/useradmin_inst_[0-7]", tableDescs);
         
         Connection connection = ds.getConnection();
-        PreparedStatement ps = connection.prepareStatement("SELECT * FROM TB_WLJ_QRCODE a WHERE a.QRCODE=?");
+        PreparedStatement ps = connection.prepareStatement("SELECT * FROM TB_PQ_QRCODE a WHERE a.QRCODE=?");
         ps.setString(1, "qrcode_val");
         ResultSet rs = ps.executeQuery();
         
         ps.clearParameters();
-        rs = ps.executeQuery("select * from tb_wlj_qrcode");
+        rs = ps.executeQuery("select * from TB_PQ_QRCODE");
         
         //ps = connection.prepareStatement("SELECT * FROM TB_WLJ_QRCODE a WHERE a.QRCODE=:qrcode");
         // rs = ps.executeQuery();

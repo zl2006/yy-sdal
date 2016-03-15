@@ -2,12 +2,15 @@ package org.yy.dal.ds;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.SQLClientInfoException;
 import java.sql.SQLException;
 import java.sql.SQLWarning;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
+import java.util.concurrent.Executor;
 
 import javax.sql.DataSource;
 
@@ -279,6 +282,58 @@ public class YYDalConnection extends YYDalConnectionSupport implements Connectio
         }
     }
     
+    @Override
+    public void abort(Executor executor)
+        throws SQLException {
+        for (String key : connection.keySet()) {
+            connection.get(key).abort(executor);
+        }
+    }
+    
+    @Override
+    public String getClientInfo(String name)
+        throws SQLException {
+        for (String key : connection.keySet()) {
+            return connection.get(key).getClientInfo(name);
+        }
+        return null;
+    }
+    
+    @Override
+    public Properties getClientInfo()
+        throws SQLException {
+        for (String key : connection.keySet()) {
+            return connection.get(key).getClientInfo();
+        }
+        return null;
+    }
+    
+    public void setClientInfo(String name, String value)
+        throws SQLClientInfoException {
+        for (String key : connection.keySet()) {
+            connection.get(key).setClientInfo(name, value);
+        }
+        status.getClientProperties().setProperty(name, value);
+    }
+    
+    public void setClientInfo(Properties properties)
+        throws SQLClientInfoException {
+        for (String key : connection.keySet()) {
+            connection.get(key).setClientInfo(properties);
+        }
+        for (Object key : properties.keySet()) {
+            status.getClientProperties().setProperty((String)key, properties.getProperty((String)key));
+        }
+    }
+    
+    public String nativeSQL(String sql)
+        throws SQLException {
+        for (String key : connection.keySet()) {
+            return connection.get(key).nativeSQL(sql);
+        }
+        return null;
+    }
+    
     /**
     * @return 返回 status
     */
@@ -301,33 +356,51 @@ public class YYDalConnection extends YYDalConnectionSupport implements Connectio
         List<String> tableDescs = new ArrayList<String>();
         tableDescs.add("user_[8]:hash(user_id)");
         tableDescs.add("qrcode_[8]:customFunc(qrcode_str)");
-        tableDescs.add("TB_WLJ_QRCODE_[1]:hash(QRCODE)");
+        tableDescs.add("TB_PQ_QRCODE_[8]:hash(QRCODE)");
         
         com.mchange.v2.c3p0.ComboPooledDataSource defaultDs = new ComboPooledDataSource();
         BeanUtils.populate(defaultDs, testMap);
         DataSource ds =
             new YYDalDatasource(defaultDs, testMap, "com.mchange.v2.c3p0.ComboPooledDataSource", "c3p0", "mysql",
-                "jdbc:mysql://127.0.0.1:3306/useradmin_inst_[1-4]", tableDescs);
+                "jdbc:mysql://127.0.0.1:3306/useradmin_inst_[0-7]", tableDescs);
         
         Connection connection = ds.getConnection();
+        connection.setAutoCommit(true);
         PreparedStatement ps =
-            connection.prepareStatement("SELECT * FROM TB_WLJ_QRCODE a WHERE a.QRCODE='aaa' and TEST < 'cc' or DD > 'cc'  and BB <= 123 and abs(aa)=bb(cc)");
+            connection.prepareStatement("SELECT QRCODE_ID, QRCODE, STATUS, TIMES, BATCH_ID, BATCHPRD_ID, CREATEQR_ID, UPDATE_TIME, FSCAN_BUYER_NICK, FSCAN_TIME FROM TB_PQ_QRCODE WHERE QRCODE = '12@dfd+dfQ'");
         ps.executeQuery();
-        ps = connection.prepareStatement("SELECT * FROM TB_WLJ_QRCODE a1, TTTT a2");
+        ps =
+            connection.prepareStatement("SELECT QRCODE_ID, QRCODE, STATUS, TIMES, BATCH_ID, BATCHPRD_ID, CREATEQR_ID, UPDATE_TIME, FSCAN_BUYER_NICK, FSCAN_TIME FROM TB_PQ_QRCODE WHERE QRCODE = '9VdZ12d+dfQ'");
         ps.executeQuery();
-        ps = connection.prepareStatement("UPDATE TB_WLJ_QRCODE a set a.TIMES=a.TIMES+1 WHERE a.QRCODE='bbb'");
+        ps = connection.prepareStatement("SELECT * FROM TB_PQ_QRCODE");
+        ps.executeQuery();
+        ps = connection.prepareStatement("SELECT * FROM `TB_SYS_USER`");
+        ps.executeQuery();
+        ps = connection.prepareStatement("UPDATE TB_PQ_QRCODE a set a.TIMES=a.TIMES+1 WHERE a.QRCODE='12@dfd+dfQ'");
         ps.executeUpdate();
-        ps = connection.prepareStatement("UPDATE TB_WLJ_QRCODE set TIMES=TIMES+1");
+        ps = connection.prepareStatement("UPDATE TB_PQ_QRCODE set TIMES=TIMES+1");
         ps.executeUpdate();
-        ps = connection.prepareStatement("INSERT TB_WLJ_QRCODE(QRCODE,ID) VALUES('ccc',123)");
+        ps =
+            connection.prepareStatement("INSERT INTO `TB_SYS_USER` " + "(" + "`USER_NAME`, " + "`PWD`," + "`ROLE`,"
+                + "`MOBILE`," + "`EMAIL`," + "`STATUS`," + "`METO`)" + "VALUES" + "(" + "'zhouliang'," + "'11041218',"
+                + "'admin'," + "'18665867002'," + "'zhouliang1@tydic.com'," + "1," + "'备注')");
         ps.execute();
-        ps = connection.prepareStatement("INSERT TB_WLJ_QRCODE(QRCODE) VALUES( abs('ccc') )");
+        ps =
+            connection.prepareStatement("INSERT INTO `TB_SYS_USER` " + "(" + "`USER_NAME`, " + "`PWD`," + "`ROLE`,"
+                + "`MOBILE`," + "`EMAIL`," + "`STATUS`," + "`METO`)" + "VALUES" + "(" + "'zhouliang1'," + "'11041218',"
+                + "'admin'," + "'18665867002'," + "'zhouliang1@tydic.com'," + "1," + "'备注1')");
         ps.execute();
-        ps = connection.prepareStatement("DELETE TB_WLJ_QRCODE");
+        connection.setAutoCommit(false);
+        ps = connection.prepareStatement("DELETE FROM TB_SYS_USER");
         ps.execute();
-        ps = connection.prepareStatement("DELETE TB_WLJ_QRCODE a WHERE a.QRCODE='ddd'");
+        connection.commit();
+        ps = connection.prepareStatement("DELETE FROM TB_PQ_QRCODE");
         ps.execute();
-        //ResultSet rs = ps.executeQuery();
+        ps =
+            connection.prepareStatement("INSERT INTO `TB_PQ_QRCODE`" + "(`QRCODE`," + "`STATUS`," + "`TIMES`,"
+                + "`BATCH_ID`)" + "VALUES(" + "'12@dfd+dfQ'," + "0," + "4," + "1211)");
+        ps.execute();
+        connection.commit();
         
     }
     
