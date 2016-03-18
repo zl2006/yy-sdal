@@ -14,12 +14,7 @@
 	<!--模块声明-->
 	<modules>
 		<module>./yydal-all</module>			<!--分布式数据库中间件所有打包-->
-		<module>./yydal-ds</module>				<!--数据源-->	
-		<module>./yydal-excutor</module>		<!--sql执行器-->		
-		<module>./yydal-merge</module>			<!--数据集合并-->
-		<module>./yydal-nm</module>				<!--分库节点管理-->
 		<module>./yydal-parse</module>			<!--sql解析器-->
-		<module>./yydal-route</module>			<!--路由规则-->
 	</modules>
 
 </project>
