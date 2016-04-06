@@ -16,7 +16,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.yy.dal.ds.constants.StatementMode;
-import org.yy.dal.ds.support.YYDalStatementSupport;
 import org.yy.dal.executor.YYDalExecutorParam;
 import org.yy.dal.nm.DbTable;
 import org.yy.dal.parse.JSQLParserException;
@@ -35,7 +34,7 @@ import org.yy.dal.util.SqlUtil;
 * @version  [版本号, 2016年3月4日]
 * @since  [产品/模块版本]
 */
-public class YYDalStatement extends YYDalStatementSupport implements Statement {
+public class YYDalStatement extends AbsYYDalStatement implements Statement {
     
     //原始sql
     private String sql;

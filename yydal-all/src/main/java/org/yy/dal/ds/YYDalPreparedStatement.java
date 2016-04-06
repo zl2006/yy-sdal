@@ -39,7 +39,6 @@ import javax.sql.DataSource;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.yy.dal.ds.constants.PreparedStatementMode;
-import org.yy.dal.ds.support.YYDalStatementSupport;
 import org.yy.dal.executor.YYDalExecutor;
 import org.yy.dal.executor.YYDalExecutorParam;
 import org.yy.dal.nm.DbTable;
@@ -62,7 +61,7 @@ import com.mchange.v2.c3p0.ComboPooledDataSource;
 * @version  [1.0, 2016年2月18日]
 * @since  [yy-sdal/1.0]
 */
-public class YYDalPreparedStatement extends YYDalStatementSupport implements PreparedStatement {
+public class YYDalPreparedStatement extends AbsYYDalStatement implements PreparedStatement {
     
     //原始sql
     private String sql;
