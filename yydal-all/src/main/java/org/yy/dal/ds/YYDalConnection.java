@@ -17,7 +17,7 @@ import javax.sql.DataSource;
 import org.apache.commons.beanutils.BeanUtils;
 import org.yy.dal.ds.constants.ConnectionStatus;
 import org.yy.dal.ds.holder.ConnectionHolder;
-import org.yy.dal.ds.support.YYDalConnectionSupport;
+import org.yy.dal.ds.support.YYDalConnectionNotSupport;
 
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 
@@ -28,7 +28,7 @@ import com.mchange.v2.c3p0.ComboPooledDataSource;
  * @version  [1.0, 2016年2月17日]
  * @since  [yy-sdal/1.0]
  */
-public class YYDalConnection extends YYDalConnectionSupport implements Connection {
+public class YYDalConnection extends YYDalConnectionNotSupport implements Connection {
     
     /**
      * 数据源

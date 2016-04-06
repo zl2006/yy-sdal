@@ -29,7 +29,7 @@ import java.util.concurrent.Executor;
 * @version  [1.0, 2016年3月2日]
 * @since  [yy-dal/1.0]
 */
-public class YYDalConnectionSupport {
+public class YYDalConnectionNotSupport {
     
     public CallableStatement prepareCall(String sql, int resultSetType, int resultSetConcurrency,
         int resultSetHoldability)
@@ -43,16 +43,6 @@ public class YYDalConnectionSupport {
     }
     
     public CallableStatement prepareCall(String sql)
-        throws SQLException {
-        throw new SQLFeatureNotSupportedException();
-    }
-    
-    public Array createArrayOf(String typeName, Object[] elements)
-        throws SQLException {
-        throw new SQLFeatureNotSupportedException();
-    }
-    
-    public Struct createStruct(String typeName, Object[] attributes)
         throws SQLException {
         throw new SQLFeatureNotSupportedException();
     }
@@ -73,6 +63,16 @@ public class YYDalConnectionSupport {
     }
     
     public void releaseSavepoint(Savepoint savepoint)
+        throws SQLException {
+        throw new SQLFeatureNotSupportedException();
+    }
+    
+    public Array createArrayOf(String typeName, Object[] elements)
+        throws SQLException {
+        throw new SQLFeatureNotSupportedException();
+    }
+    
+    public Struct createStruct(String typeName, Object[] attributes)
         throws SQLException {
         throw new SQLFeatureNotSupportedException();
     }
