@@ -27,7 +27,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.Executor;
 
-import org.yy.dal.ds.constants.ConnectionStatus;
+import org.yy.dal.ds.ConnectionStatus;
 
 /**
 * 数据库连接代理类

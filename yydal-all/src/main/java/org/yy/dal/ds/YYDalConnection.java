@@ -15,7 +15,6 @@ import java.util.concurrent.Executor;
 import javax.sql.DataSource;
 
 import org.apache.commons.beanutils.BeanUtils;
-import org.yy.dal.ds.constants.ConnectionStatus;
 import org.yy.dal.ds.holder.ConnectionHolder;
 import org.yy.dal.ds.support.YYDalConnectionNotSupport;
 

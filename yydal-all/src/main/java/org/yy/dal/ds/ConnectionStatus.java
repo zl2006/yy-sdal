@@ -6,7 +6,7 @@
 * 修改时间:  2016年3月2日
 * 修改内容:  <修改内容>
 */
-package org.yy.dal.ds.constants;
+package org.yy.dal.ds;
 
 import java.util.Properties;
 
