@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.yy.dal.ds.constants.StatementMode;
-import org.yy.dal.executor.YYDalExecutorParam;
+import org.yy.dal.executor.YYDalExecutorContext;
 import org.yy.dal.nm.DbTable;
 import org.yy.dal.parse.JSQLParserException;
 import org.yy.dal.parse.expression.Expression;
@@ -122,7 +122,7 @@ public class YYDalStatement extends AbsYYDalStatement implements Statement {
         return false;
     }
     
-    protected YYDalExecutorParam initExecutorParam()
+    protected YYDalExecutorContext initExecutorParam()
         throws JSQLParserException, SQLException {
         //Step 1, sql参数填充，以便分析sql时能正常取出分表字段的值
         org.yy.dal.parse.statement.Statement statement = CCJSqlParserUtil.parse(this.sql);
@@ -137,7 +137,7 @@ public class YYDalStatement extends AbsYYDalStatement implements Statement {
         List<Connection> conns = fetchConnection(partition, connection);
         
         //Step 4, 执行并返回结果 
-        YYDalExecutorParam param = new YYDalExecutorParam(conns, null, this.sql, statement, dbtable, partition);
+        YYDalExecutorContext param = new YYDalExecutorContext(conns, null, this.sql, statement, dbtable, partition);
         return param;
     }
     

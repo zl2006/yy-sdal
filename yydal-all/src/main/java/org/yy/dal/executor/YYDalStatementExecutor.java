@@ -29,7 +29,7 @@ import org.yy.dal.route.Partition;
 */
 public class YYDalStatementExecutor {
     
-    public ResultSet executeQuery(YYDalExecutorParam param, YYDalStatement dalStatement)
+    public ResultSet executeQuery(YYDalExecutorContext param, YYDalStatement dalStatement)
         throws Exception {
         try {
             Partition partition = param.getPartition();
@@ -66,7 +66,7 @@ public class YYDalStatementExecutor {
         return null;
     }
     
-    public int executeUpdate(YYDalExecutorParam param, YYDalStatement dalStatement)
+    public int executeUpdate(YYDalExecutorContext param, YYDalStatement dalStatement)
         throws Exception {
         int total = 0;
         try {
@@ -102,7 +102,7 @@ public class YYDalStatementExecutor {
         return total;
     }
     
-    public boolean execute(YYDalExecutorParam param, YYDalStatement dalStatement)
+    public boolean execute(YYDalExecutorContext param, YYDalStatement dalStatement)
         throws Exception {
         boolean result = false;
         

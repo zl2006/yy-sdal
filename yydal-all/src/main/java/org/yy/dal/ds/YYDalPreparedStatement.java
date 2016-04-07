@@ -40,7 +40,7 @@ import javax.sql.DataSource;
 import org.apache.commons.beanutils.BeanUtils;
 import org.yy.dal.ds.constants.PreparedStatementMode;
 import org.yy.dal.executor.YYDalExecutor;
-import org.yy.dal.executor.YYDalExecutorParam;
+import org.yy.dal.executor.YYDalExecutorContext;
 import org.yy.dal.nm.DbTable;
 import org.yy.dal.parse.JSQLParserException;
 import org.yy.dal.parse.expression.Expression;
@@ -199,7 +199,7 @@ public class YYDalPreparedStatement extends AbsYYDalStatement implements Prepare
     public ResultSet executeQuery()
         throws SQLException {
         try {
-            YYDalExecutorParam param = initExecutorParam();
+            YYDalExecutorContext param = initExecutorParam();
             return new YYDalExecutor().executeQuery(param, this);
         }
         catch (Exception e) {
@@ -212,7 +212,7 @@ public class YYDalPreparedStatement extends AbsYYDalStatement implements Prepare
     public int executeUpdate()
         throws SQLException {
         try {
-            YYDalExecutorParam param = initExecutorParam();
+            YYDalExecutorContext param = initExecutorParam();
             return new YYDalExecutor().executeUpdate(param, this);
         }
         catch (Exception e) {
@@ -225,7 +225,7 @@ public class YYDalPreparedStatement extends AbsYYDalStatement implements Prepare
     public boolean execute()
         throws SQLException {
         try {
-            YYDalExecutorParam param = initExecutorParam();
+            YYDalExecutorContext param = initExecutorParam();
             return new YYDalExecutor().execute(param, this);
         }
         catch (Exception e) {
@@ -233,7 +233,7 @@ public class YYDalPreparedStatement extends AbsYYDalStatement implements Prepare
         }
     }
     
-    protected YYDalExecutorParam initExecutorParam()
+    protected YYDalExecutorContext initExecutorParam()
         throws JSQLParserException, SQLException {
         //Step 1, sql参数填充，以便分析sql时能正常取出分表字段的值
         String fillsql = ParameterUtil.fillParam(this.sql, this.paramValues);
@@ -249,8 +249,8 @@ public class YYDalPreparedStatement extends AbsYYDalStatement implements Prepare
         List<Connection> conns = fetchConnection(partition, connection);
         
         //Step 4, 执行并返回结果 
-        YYDalExecutorParam param =
-            new YYDalExecutorParam(conns, this.paramValues, this.sql, CCJSqlParserUtil.parse(this.sql), dbtable,
+        YYDalExecutorContext param =
+            new YYDalExecutorContext(conns, this.paramValues, this.sql, CCJSqlParserUtil.parse(this.sql), dbtable,
                 partition);
         return param;
     }

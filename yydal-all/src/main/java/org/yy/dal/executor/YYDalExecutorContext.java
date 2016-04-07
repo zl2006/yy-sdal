@@ -1,7 +1,7 @@
 /*
 * 文 件 名:  ExecutorParam.java
 * 版    权:  YY Technologies Co., Ltd. Copyright 2012-2013,  All rights reserved
-* 描    述:  执行器参数
+* 描    述:  执行器需要的上下文
 * 修 改 人:  zhouliang
 * 修改时间:  2016年2月23日
 * 修改内容:  <修改内容>
@@ -17,13 +17,13 @@ import org.yy.dal.parse.statement.Statement;
 import org.yy.dal.route.Partition;
 
 /**
-* 执行器参数
+* 执行器需要的上下文
 * 
 * @author  zhouliang
 * @version  [1.0, 2016年2月23日]
 * @since  [yy-sdal/1.0]
 */
-public class YYDalExecutorParam {
+public class YYDalExecutorContext {
     
     //所使用的连接
     private List<Connection> conns;
@@ -45,7 +45,7 @@ public class YYDalExecutorParam {
     
     /** 
     */
-    public YYDalExecutorParam(List<Connection> conns, List<YYDalParameter> params, String sql, Statement statement,
+    public YYDalExecutorContext(List<Connection> conns, List<YYDalParameter> params, String sql, Statement statement,
         DbTable table, Partition partition) {
         this.sql = sql;
         this.statement = statement;
