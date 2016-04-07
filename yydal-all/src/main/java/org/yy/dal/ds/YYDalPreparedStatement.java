@@ -39,7 +39,7 @@ import javax.sql.DataSource;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.yy.dal.ds.constants.PreparedStatementMode;
-import org.yy.dal.executor.YYDalExecutor;
+import org.yy.dal.executor.YYDalPreparedStatementExecutor;
 import org.yy.dal.executor.YYDalExecutorContext;
 import org.yy.dal.nm.DbTable;
 import org.yy.dal.parse.JSQLParserException;
@@ -199,8 +199,8 @@ public class YYDalPreparedStatement extends AbsYYDalStatement implements Prepare
     public ResultSet executeQuery()
         throws SQLException {
         try {
-            YYDalExecutorContext param = initExecutorParam();
-            return new YYDalExecutor().executeQuery(param, this);
+            YYDalExecutorContext executorCtx = initExecutorCtx();
+            return new YYDalPreparedStatementExecutor().executeQuery(executorCtx, this);
         }
         catch (Exception e) {
             throw new SQLException(e);
@@ -212,8 +212,8 @@ public class YYDalPreparedStatement extends AbsYYDalStatement implements Prepare
     public int executeUpdate()
         throws SQLException {
         try {
-            YYDalExecutorContext param = initExecutorParam();
-            return new YYDalExecutor().executeUpdate(param, this);
+            YYDalExecutorContext executorCtx = initExecutorCtx();
+            return new YYDalPreparedStatementExecutor().executeUpdate(executorCtx, this);
         }
         catch (Exception e) {
             throw new SQLException(e);
@@ -225,15 +225,15 @@ public class YYDalPreparedStatement extends AbsYYDalStatement implements Prepare
     public boolean execute()
         throws SQLException {
         try {
-            YYDalExecutorContext param = initExecutorParam();
-            return new YYDalExecutor().execute(param, this);
+            YYDalExecutorContext executorCtx = initExecutorCtx();
+            return new YYDalPreparedStatementExecutor().execute(executorCtx, this);
         }
         catch (Exception e) {
             throw new SQLException(e);
         }
     }
     
-    protected YYDalExecutorContext initExecutorParam()
+    protected YYDalExecutorContext initExecutorCtx()
         throws JSQLParserException, SQLException {
         //Step 1, sql参数填充，以便分析sql时能正常取出分表字段的值
         String fillsql = ParameterUtil.fillParam(this.sql, this.paramValues);

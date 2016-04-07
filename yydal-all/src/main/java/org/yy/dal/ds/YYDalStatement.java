@@ -17,6 +17,7 @@ import java.util.Map;
 
 import org.yy.dal.ds.constants.StatementMode;
 import org.yy.dal.executor.YYDalExecutorContext;
+import org.yy.dal.executor.YYDalStatementExecutor;
 import org.yy.dal.nm.DbTable;
 import org.yy.dal.parse.JSQLParserException;
 import org.yy.dal.parse.expression.Expression;
@@ -82,15 +83,28 @@ public class YYDalStatement extends AbsYYDalStatement implements Statement {
     @Override
     public ResultSet executeQuery(String sql)
         throws SQLException {
-        return null;
+        this.sql = sql;
+        try {
+            YYDalExecutorContext executorCtx = initExecutorCtx();
+            return new YYDalStatementExecutor().executeQuery(executorCtx, this);
+        }
+        catch (Exception e) {
+            throw new SQLException(e);
+        }
     }
     
     /** {@inheritDoc} */
     @Override
     public int executeUpdate(String sql)
         throws SQLException {
-        // TODO Auto-generated method stub
-        return 0;
+        this.sql = sql;
+        try {
+            YYDalExecutorContext executorCtx = initExecutorCtx();
+            return new YYDalStatementExecutor().executeUpdate(executorCtx, this);
+        }
+        catch (Exception e) {
+            throw new SQLException(e);
+        }
     }
     
     /** {@inheritDoc} */
@@ -104,8 +118,14 @@ public class YYDalStatement extends AbsYYDalStatement implements Statement {
     @Override
     public boolean execute(String sql)
         throws SQLException {
-        // TODO Auto-generated method stub
-        return false;
+        this.sql = sql;
+        try {
+            YYDalExecutorContext executorCtx = initExecutorCtx();
+            return new YYDalStatementExecutor().execute(executorCtx, this);
+        }
+        catch (Exception e) {
+            throw new SQLException(e);
+        }
     }
     
     /** {@inheritDoc} */
@@ -122,7 +142,7 @@ public class YYDalStatement extends AbsYYDalStatement implements Statement {
         return false;
     }
     
-    protected YYDalExecutorContext initExecutorParam()
+    protected YYDalExecutorContext initExecutorCtx()
         throws JSQLParserException, SQLException {
         //Step 1, sql参数填充，以便分析sql时能正常取出分表字段的值
         org.yy.dal.parse.statement.Statement statement = CCJSqlParserUtil.parse(this.sql);
@@ -137,8 +157,8 @@ public class YYDalStatement extends AbsYYDalStatement implements Statement {
         List<Connection> conns = fetchConnection(partition, connection);
         
         //Step 4, 执行并返回结果 
-        YYDalExecutorContext param = new YYDalExecutorContext(conns, null, this.sql, statement, dbtable, partition);
-        return param;
+        YYDalExecutorContext executorCtx = new YYDalExecutorContext(conns, null, this.sql, statement, dbtable, partition);
+        return executorCtx;
     }
     
     /**

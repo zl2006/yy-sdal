@@ -9,13 +9,13 @@
 package org.yy.dal.executor;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.yy.dal.ds.YYDalStatement;
+import org.yy.dal.ds.YYDalPreparedStatement;
 import org.yy.dal.route.Partition;
 
 /**
@@ -25,24 +25,26 @@ import org.yy.dal.route.Partition;
 * @version  [1.0, 2016年2月23日]
 * @since  [yy-sdal/1.0]
 */
-public class YYDalStatementExecutor extends AbsYYDalExecutor {
+public class YYDalPreparedStatementExecutor extends AbsYYDalExecutor {
     
-    public ResultSet executeQuery(YYDalExecutorContext executorCtx, YYDalStatement dalStatement)
+    public ResultSet executeQuery(YYDalExecutorContext executorCtx, YYDalPreparedStatement dalPreparedStatement)
         throws Exception {
         try {
             Partition partition = executorCtx.getPartition();
             if (partition == null) { //不使用分库分表情况下执行
                 Connection conn = executorCtx.getConns().get(0);
-                Statement ps = createStatement(conn, dalStatement);
-                return ps.executeQuery(dalStatement.getSql());
+                PreparedStatement ps = createPreparedStatement(executorCtx.getSql(), conn, dalPreparedStatement);
+                setParams(ps, executorCtx.getParams());
+                return ps.executeQuery();
             }
             else if (partition.getInstNumber() > -1) { //使用分库分表的某个实例执行
                 String tableName = executorCtx.getTable().getTableName();
                 String tempSql = executorCtx.getSql();
                 tempSql = tempSql.replaceAll("(?i:" + tableName + ")", tableName + "_" + partition.getTableNumber());
                 Connection conn = executorCtx.getConns().get(0);
-                Statement ps = createStatement(conn, dalStatement);
-                return ps.executeQuery(tempSql);
+                PreparedStatement ps = createPreparedStatement(tempSql, conn, dalPreparedStatement);
+                setParams(ps, executorCtx.getParams());
+                return ps.executeQuery();
             }
             else {
                 //TODO 处理多个结果集的返回
@@ -52,8 +54,9 @@ public class YYDalStatementExecutor extends AbsYYDalExecutor {
                     for (int j = 0; j < executorCtx.getTable().getTableNum(); ++j) {
                         String tempSql = executorCtx.getSql().replaceAll("(?i:" + tableName + ")", tableName + "_" + j);
                         Connection conn = executorCtx.getConns().get(i);
-                        Statement ps = createStatement(conn, dalStatement);
-                        results.add(ps.executeQuery(tempSql));
+                        PreparedStatement ps = createPreparedStatement(tempSql, conn, dalPreparedStatement);
+                        setParams(ps, executorCtx.getParams());
+                        results.add(ps.executeQuery());
                     }
                 }
             }
@@ -64,23 +67,26 @@ public class YYDalStatementExecutor extends AbsYYDalExecutor {
         return null;
     }
     
-    public int executeUpdate(YYDalExecutorContext executorCtx, YYDalStatement dalStatement)
+    public int executeUpdate(YYDalExecutorContext executorCtx, YYDalPreparedStatement dalPreparedStatement)
         throws Exception {
         int total = 0;
+        
         try {
             Partition partition = executorCtx.getPartition();
             if (partition == null) { //不使用分库分表情况下执行
                 Connection conn = executorCtx.getConns().get(0);
-                Statement ps = createStatement(conn, dalStatement);
-                total = ps.executeUpdate(dalStatement.getSql());
+                PreparedStatement ps = createPreparedStatement(executorCtx.getSql(), conn, dalPreparedStatement);
+                setParams(ps, executorCtx.getParams());
+                total = ps.executeUpdate();
             }
             else if (partition.getInstNumber() > -1) { //使用分库分表的某个实例执行
                 String tableName = executorCtx.getTable().getTableName();
                 String tempSql = executorCtx.getSql();
                 tempSql = tempSql.replaceAll("(?i:" + tableName + ")", tableName + "_" + partition.getTableNumber());
                 Connection conn = executorCtx.getConns().get(0);
-                Statement ps = createStatement(conn, dalStatement);
-                total = ps.executeUpdate(tempSql);
+                PreparedStatement ps = createPreparedStatement(tempSql, conn, dalPreparedStatement);
+                setParams(ps, executorCtx.getParams());
+                total = ps.executeUpdate();
             }
             else {
                 String tableName = executorCtx.getTable().getTableName();
@@ -88,8 +94,9 @@ public class YYDalStatementExecutor extends AbsYYDalExecutor {
                     for (int j = 0; j < executorCtx.getTable().getTableNum(); ++j) {
                         String tempSql = executorCtx.getSql().replaceAll("(?i:" + tableName + ")", tableName + "_" + j);
                         Connection conn = executorCtx.getConns().get(i);
-                        Statement ps = createStatement(conn, dalStatement);
-                        total += ps.executeUpdate(tempSql);
+                        PreparedStatement ps = createPreparedStatement(tempSql, conn, dalPreparedStatement);
+                        setParams(ps, executorCtx.getParams());
+                        total += ps.executeUpdate();
                     }
                 }
             }
@@ -100,7 +107,7 @@ public class YYDalStatementExecutor extends AbsYYDalExecutor {
         return total;
     }
     
-    public boolean execute(YYDalExecutorContext executorCtx, YYDalStatement dalStatement)
+    public boolean execute(YYDalExecutorContext executorCtx, YYDalPreparedStatement dalPreparedStatement)
         throws Exception {
         boolean result = false;
         
@@ -108,16 +115,18 @@ public class YYDalStatementExecutor extends AbsYYDalExecutor {
             Partition partition = executorCtx.getPartition();
             if (partition == null) { //不使用分库分表情况下执行
                 Connection conn = executorCtx.getConns().get(0);
-                Statement ps = createStatement(conn, dalStatement);
-                result = ps.execute(dalStatement.getSql());
+                PreparedStatement ps = createPreparedStatement(executorCtx.getSql(), conn, dalPreparedStatement);
+                setParams(ps, executorCtx.getParams());
+                result = ps.execute();
             }
             else if (partition.getInstNumber() > -1) { //使用分库分表的某个实例执行
                 String tableName = executorCtx.getTable().getTableName();
                 String tempSql = executorCtx.getSql();
                 tempSql = tempSql.replaceAll("(?i:" + tableName + ")", tableName + "_" + partition.getTableNumber());
                 Connection conn = executorCtx.getConns().get(0);
-                Statement ps = createStatement(conn, dalStatement);
-                result = ps.execute(tempSql);
+                PreparedStatement ps = createPreparedStatement(tempSql, conn, dalPreparedStatement);
+                setParams(ps, executorCtx.getParams());
+                result = ps.execute();
             }
             else {
                 String tableName = executorCtx.getTable().getTableName();
@@ -125,8 +134,9 @@ public class YYDalStatementExecutor extends AbsYYDalExecutor {
                     for (int j = 0; j < executorCtx.getTable().getTableNum(); ++j) {
                         String tempSql = executorCtx.getSql().replaceAll("(?i:" + tableName + ")", tableName + "_" + j);
                         Connection conn = executorCtx.getConns().get(i);
-                        Statement ps = createStatement(conn, dalStatement);
-                        if (ps.execute(tempSql)) {
+                        PreparedStatement ps = createPreparedStatement(tempSql, conn, dalPreparedStatement);
+                        setParams(ps, executorCtx.getParams());
+                        if (ps.execute()) {
                             result = true;
                         }
                     }
@@ -139,5 +149,4 @@ public class YYDalStatementExecutor extends AbsYYDalExecutor {
         return result;
     }
     
-
 }
