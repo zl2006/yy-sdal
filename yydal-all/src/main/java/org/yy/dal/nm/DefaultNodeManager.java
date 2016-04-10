@@ -30,16 +30,16 @@ public class DefaultNodeManager implements DbNodeManager {
     private static Logger logger = LoggerFactory.getLogger(DefaultNodeManager.class);
     
     /**
-     * 节点及实例描述，jdbc:mysql://192.168.1.[1,2]:3306/useradmin_inst_[1-3]
+     * 节点及实例定义，jdbc:mysql://192.168.1.[1,2]:3306/useradmin_inst_[1-3]
      * 192.168.1.1表示节点
      * useradmin_inst_1表示实例
      */
     private String dbnodeDef;
     
     /**
-     * 分表描述，包括分表及路由描述 user_[8]:hash(user_id)
+     * 分表定义，包括分表及路由描述 user_[8]:hash(user_id)
      */
-    private List<String> tableRules = new ArrayList<String>();
+    private List<String> tableRuleDefs = new ArrayList<String>();
     
     /**
      * 数据库实例
@@ -59,17 +59,17 @@ public class DefaultNodeManager implements DbNodeManager {
     /**
      * 构造mysql节点管理器，支持分表定义
      * 
-     * @param dbnodeListDesc 节点定义
+     * @param dbnodeDef 节点定义
      * 
-     * @param tableListDesc 分表定义
+     * @param tableRuleDefs 分表定义
      */
-    public DefaultNodeManager(DbParse dbParse, String dbnodeDef, List<String> tableRules) {
+    public DefaultNodeManager(DbParse dbParse, String dbnodeDef, List<String> tableRuleDefs) {
         if (logger.isDebugEnabled()) {
             logger.debug("------------------------------------------------------------");
-            logger.debug("解析节点与实例：" + tableRules);
+            logger.debug("解析节点与实例：" + tableRuleDefs);
         }
         this.dbnodeDef = dbnodeDef;
-        this.tableRules = tableRules;
+        this.tableRuleDefs = tableRuleDefs;
         dbParse.parse(this);
         if (logger.isDebugEnabled()) {
             logger.debug("节点:" + dbnodes);
@@ -82,7 +82,7 @@ public class DefaultNodeManager implements DbNodeManager {
     }
     
     public List<String> getTableRuleDefs() {
-        return tableRules;
+        return tableRuleDefs;
     }
     
     /** {@inheritDoc} */
@@ -101,6 +101,13 @@ public class DefaultNodeManager implements DbNodeManager {
     @Override
     public Map<String, DbTable> dbTables() {
         return this.dbtables;
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public String toString() {
+        return "DefaultNodeManager [dbnodeDef=" + dbnodeDef + ", tableRules=" + tableRuleDefs + ", dbinstances="
+            + dbinstances + ", dbtables=" + dbtables + ", dbnodes=" + dbnodes + "]";
     }
     
     public static void main(String[] args) {
