@@ -375,7 +375,7 @@ public class YYDalConnection extends YYDalConnectionNotSupport implements Connec
         Connection connection = ds.getConnection();
         connection.setAutoCommit(true);
         PreparedStatement ps =
-            connection.prepareStatement("SELECT QRCODE_ID, QRCODE, STATUS, TIMES, BATCH_ID, BATCHPRD_ID, CREATEQR_ID, UPDATE_TIME, FSCAN_BUYER_NICK, FSCAN_TIME FROM TB_PQ_QRCODE WHERE QRCODE = '12@dfd+dfQ'");
+            connection.prepareStatement("SELECT QRCODE_ID, QRCODE, STATUS, TIMES, BATCH_ID, BATCHPRD_ID, CREATEQR_ID, UPDATE_TIME, FSCAN_BUYER_NICK, FSCAN_TIME FROM TB_PQ_QRCODE a WHERE a.QRCODE = 'G2@dfd+dfQ'");
         ps.executeQuery();
         ps =
             connection.prepareStatement("SELECT QRCODE_ID, QRCODE, STATUS, TIMES, BATCH_ID, BATCHPRD_ID, CREATEQR_ID, UPDATE_TIME, FSCAN_BUYER_NICK, FSCAN_TIME FROM TB_PQ_QRCODE WHERE QRCODE = '9VdZ12d+dfQ'");

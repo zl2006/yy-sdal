@@ -242,7 +242,7 @@ public class YYDalPreparedStatement extends AbsYYDalStatement implements Prepare
         //Step 2, 获取最终选择的实例及分表信息
         Map<String, Table> tables = SqlUtil.getTables(statement); //取语句中用到的表
         Map<String, Expression> whereColumns = SqlUtil.getWhere(statement); //取语句中where的列
-        DbTable dbtable = PartitionUtil.partitionTable(tables, datasource.getDbnodeManager()); //取到第一个分库表信息，TODO 有bug,不能是第一个，要取出所有的，并取出参数值范围最小的那个
+        DbTable dbtable = PartitionUtil.partitionTable(tables, datasource.getDbnodeManager());
         Partition partition = PartitionUtil.partition(tables, whereColumns, datasource.getDbnodeManager());
         
         //Step 3, 获取当前sql所要的数据库连接
@@ -252,6 +252,7 @@ public class YYDalPreparedStatement extends AbsYYDalStatement implements Prepare
         YYDalExecutorContext param =
             new YYDalExecutorContext(conns, this.paramValues, this.sql, CCJSqlParserUtil.parse(this.sql), dbtable,
                 partition);
+        
         return param;
     }
     
@@ -697,17 +698,17 @@ public class YYDalPreparedStatement extends AbsYYDalStatement implements Prepare
         ps.clearParameters();
         rs = ps.executeQuery("select * from TB_PQ_QRCODE");
         
-        //ps = connection.prepareStatement("SELECT * FROM TB_WLJ_QRCODE a WHERE a.QRCODE=:qrcode");
-        // rs = ps.executeQuery();
+        ps = connection.prepareStatement("SELECT * FROM TB_WLJ_QRCODE a WHERE a.QRCODE=:qrcode");
+        rs = ps.executeQuery();
         
-        //ps = connection.prepareStatement("SELECT * FROM TB_WLJ_QRCODE a WHERE a.QRCODE='abcdef'");
-        //rs = ps.executeQuery();
+        ps = connection.prepareStatement("SELECT * FROM TB_WLJ_QRCODE a WHERE a.QRCODE='abcdef'");
+        rs = ps.executeQuery();
         
-        //ps = connection.prepareStatement("SELECT * FROM TB_WLJ_QRCODE a");
-        // rs = ps.executeQuery();
+        ps = connection.prepareStatement("SELECT * FROM TB_WLJ_QRCODE a");
+        rs = ps.executeQuery();
         
-        //ps = connection.prepareStatement("SELECT * FROM TB_USER_INFO a WHERE a.USER_ID = '123' ");
-        //rs = ps.executeQuery();
+        ps = connection.prepareStatement("SELECT * FROM TB_USER_INFO a WHERE a.USER_ID = '123' ");
+        rs = ps.executeQuery();
         
         rs.next();
         

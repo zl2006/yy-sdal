@@ -211,4 +211,46 @@ public final class SqlUtil {
         
         return result;
     }
+    
+    public static void main(String[] args)
+        throws Exception {
+        
+        String sql = "SELECT QRCODE_ID, QRCODE, STATUS from TB_PQ_QRCODE where STATUS = 1";
+        Map<String, Table> tables = SqlUtil.getTables(sql);
+        Map<String, Expression> wheres = SqlUtil.getWhere(sql);
+        
+        sql = "SELECT QRCODE_ID, QRCODE, STATUS from TB_PQ_QRCODE a where a.STATUS = 1";
+        tables = SqlUtil.getTables(sql);
+        wheres = SqlUtil.getWhere(sql);
+        
+        sql = "SELECT QRCODE_ID, QRCODE, STATUS from TB_PQ_QRCODE  where TB_PQ_QRCODE.STATUS = 1";
+        tables = SqlUtil.getTables(sql);
+        wheres = SqlUtil.getWhere(sql);
+        
+        sql =
+            "SELECT QRCODE_ID, QRCODE, STATUS from TB_PQ_QRCODE, TB_PQ_TESTTABLE  where TB_PQ_QRCODE.QRCODE = TB_PQ_TESTTABLE.QRCODE and TB_PQ_QRCODE.STATUS = 1";
+        tables = SqlUtil.getTables(sql);
+        wheres = SqlUtil.getWhere(sql);
+        
+        sql =
+            "SELECT QRCODE_ID, QRCODE, STATUS from TB_PQ_QRCODE a, TB_PQ_TESTTABLE b where a.QRCODE = b.QRCODE and a.STATUS = 1";
+        tables = SqlUtil.getTables(sql);
+        wheres = SqlUtil.getWhere(sql);
+        
+        sql =
+            "SELECT QRCODE_ID, QRCODE, STATUS from TB_PQ_QRCODE left join TB_PQ_TESTTABLE  on TB_PQ_QRCODE.QRCODE = TB_PQ_TESTTABLE.QRCODE where TB_PQ_QRCODE.STATUS = 1";
+        tables = SqlUtil.getTables(sql);
+        wheres = SqlUtil.getWhere(sql);
+        
+        sql = "UPDATE TB_PQ_QRCODE a set a.TIMES=a.TIMES+1 WHERE a.QRCODE='12@dfd+dfQ'";
+        tables = SqlUtil.getTables(sql);
+        wheres = SqlUtil.getWhere(sql);
+        
+        sql = "DELETE FROM TB_PQ_QRCODE";
+        tables = SqlUtil.getTables(sql);
+        wheres = SqlUtil.getWhere(sql);
+        
+        tables.clear();
+        wheres.clear();
+    }
 }
