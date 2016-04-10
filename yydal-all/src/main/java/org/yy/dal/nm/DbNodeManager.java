@@ -36,18 +36,13 @@ public interface DbNodeManager {
     public Map<String, DbTable> dbTables();
     
     /**
-     * 数据库类型
-     */
-    public String dbType();
-    
-    /**
      * 节点与实例定义
      */
-    public String getDbnodeListDesc();
+    public String getDbnodeDef();
     
     /**
-     * 数据库分表及路由规则定义
+     * 数据库分表及路由规则
      */
-    public List<String> getTableListDescs();
+    public List<String> getTableRuleDefs();
     
 }

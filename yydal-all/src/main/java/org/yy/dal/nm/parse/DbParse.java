@@ -11,7 +11,7 @@ package org.yy.dal.nm.parse;
 import org.yy.dal.nm.DbNodeManager;
 
 /**
-* 解析分库分表定义
+* 解析分库分表定义,生成节点、实例、分表数据对象
 * 
 * @author  zhouliang
 * @version  [1.0, 2016年2月17日]

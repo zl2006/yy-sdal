@@ -18,7 +18,7 @@ import org.yy.dal.nm.DbTable;
 
 /**
 * mysql分库分表定义解析
-*    * 节点描述定义,
+     * 一、节点描述定义（可描述多个使用分号隔开）,[1,3]表示1和3两个数据, [1-3]表示1，2，3三个数据。
      * jdbc:mysql://192.168.1.[1,2]:3306:useradmin_inst_[1-3];jdbc:mysql://192.168.1.[3-6]:3306:useradmin_inst_[1-3]
      * 节点描述信息， jdbc:mysql://192.168.1.[1,3]:3306:useradmin_inst_[1-3]
      * 相当于：
@@ -29,11 +29,11 @@ import org.yy.dal.nm.DbTable;
      * jdbc:mysql://192.168.1.3:3306:useradmin_inst_2
      * jdbc:mysql://192.168.1.3:3306:useradmin_inst_3
      * 
-     * 分表定义
-     * 例如：user_[6]:hash(user_id)
-     * 实际表名为user_1   user_2 ... user_6
+     * 二、分表定义：表名_[分表数量]:分表规则
+     * a, 例如：user_[6]:hash(user_id)
+     * 表示共六个表，实际表名为user_1   user_2 ... user_6, 使用hash路由
      * 如果是单表（采用表分区时）可以定义为user_[1]:hash(user_id)
-     * 实际表名为user,不在有后辍
+     * b, 实际表名为user,不在有后辍
 * 
 * @author  zhouliang
 * @version  [1.0, 2016年2月17日]
@@ -57,10 +57,10 @@ public class MysqlDbParse implements DbParse {
     
     //解析数据库节点与实例
     protected void parseDbNode(DbNodeManager nodeManager) {
-        String dbnodeListDesc = nodeManager.getDbnodeListDesc();
+        String dbnodeDef = nodeManager.getDbnodeDef();
         
         //Step1: 分拆节点配置描述
-        String[] dbnodeDescs = dbnodeListDesc.split(DBNODE_SPLIT);
+        String[] dbnodeDescs = dbnodeDef.split(DBNODE_SPLIT);
         
         //Step2:解析节点
         for (String dbnodeItem : dbnodeDescs) {
@@ -68,7 +68,7 @@ public class MysqlDbParse implements DbParse {
                 continue;
             }
             
-            //Step2.1:解析出节点中的变量项jdbc:mysql://192.168.1.[1,3]:3306:useradmin_inst_[1-3], 如[1,3],[1-3]
+            //Step2.1:解析出节点中的变量项,例：jdbc:mysql://192.168.1.[1,3]:3306:useradmin_inst_[1-3]中变量项为[1,3]和[1-3]
             Pattern p = Pattern.compile("\\[\\d*[,-]*\\d*]");
             Matcher m = p.matcher(dbnodeItem);
             String firstvarstr = null;
@@ -116,7 +116,7 @@ public class MysqlDbParse implements DbParse {
     
     //解析数据库分表
     protected void parseDbTable(DbNodeManager dbNodeManager) {
-        for (String tableItem : dbNodeManager.getTableListDescs()) {
+        for (String tableItem : dbNodeManager.getTableRuleDefs()) {
             int temp = tableItem.indexOf(DBTABLE_SPLIT);
             String tableDesc = tableItem.substring(0, temp);
             String ruleDesc = tableItem.substring(temp + 1, tableItem.length());

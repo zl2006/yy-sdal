@@ -19,7 +19,7 @@ import org.yy.dal.nm.parse.DbParse;
 import org.yy.dal.nm.parse.MysqlDbParse;
 
 /**
-* mysql节点管理器
+* 节点管理器
 * 
 * @author  zhouliang
 * @version  [1.0, 2016年2月16日]
@@ -34,12 +34,12 @@ public class DefaultNodeManager implements DbNodeManager {
      * 192.168.1.1表示节点
      * useradmin_inst_1表示实例
      */
-    private String dbnodeListDesc;
+    private String dbnodeDef;
     
     /**
      * 分表描述，包括分表及路由描述 user_[8]:hash(user_id)
      */
-    private List<String> tableListDescs = new ArrayList<String>();
+    private List<String> tableRules = new ArrayList<String>();
     
     /**
      * 数据库实例
@@ -57,24 +57,19 @@ public class DefaultNodeManager implements DbNodeManager {
     private Map<String, DbNode> dbnodes = new HashMap<String, DbNode>();
     
     /**
-     * 数据库类型
-     */
-    private String dbType;
-    
-    /**
      * 构造mysql节点管理器，支持分表定义
      * 
      * @param dbnodeListDesc 节点定义
      * 
      * @param tableListDesc 分表定义
      */
-    public DefaultNodeManager(DbParse dbParse, String dbnodeListDesc, List<String> tableListDescs) {
-        if(logger.isDebugEnabled()){
+    public DefaultNodeManager(DbParse dbParse, String dbnodeDef, List<String> tableRules) {
+        if (logger.isDebugEnabled()) {
             logger.debug("------------------------------------------------------------");
-            logger.debug("解析节点与实例：" + dbnodeListDesc);
+            logger.debug("解析节点与实例：" + tableRules);
         }
-        this.dbnodeListDesc = dbnodeListDesc;
-        this.tableListDescs = tableListDescs;
+        this.dbnodeDef = dbnodeDef;
+        this.tableRules = tableRules;
         dbParse.parse(this);
         if (logger.isDebugEnabled()) {
             logger.debug("节点:" + dbnodes);
@@ -82,12 +77,12 @@ public class DefaultNodeManager implements DbNodeManager {
         }
     }
     
-    public String getDbnodeListDesc() {
-        return dbnodeListDesc;
+    public String getDbnodeDef() {
+        return dbnodeDef;
     }
     
-    public List<String> getTableListDescs() {
-        return tableListDescs;
+    public List<String> getTableRuleDefs() {
+        return tableRules;
     }
     
     /** {@inheritDoc} */
@@ -108,35 +103,25 @@ public class DefaultNodeManager implements DbNodeManager {
         return this.dbtables;
     }
     
-    /** {@inheritDoc} */
-    @Override
-    public String dbType() {
-        return this.dbType;
-    }
-    
-    public void setDbType(String dbType) {
-        this.dbType = dbType;
-    }
-    
     public static void main(String[] args) {
         
-        List<String> tableDescs = new ArrayList<String>();
-        tableDescs.add("user_[8]:hash(user_id)");
-        tableDescs.add("qrcode_[8]:customFunc(qrcode_str)");
+        List<String> tableRules = new ArrayList<String>();
+        tableRules.add("user_[8]:hash(user_id)");
+        tableRules.add("qrcode_[8]:customFunc(qrcode_str)");
         
         DbNodeManager nm =
             new DefaultNodeManager(
                 new MysqlDbParse(),
                 "jdbc:mysql://192.168.1.[1,2]:3306/useradmin_inst_[1-3];jdbc:mysql://192.168.1.[4-6]:3306/useradmin_inst_[1-3];jdbc:mysql://192.168.1.[7]:3306/useradmin_inst_1",
-                tableDescs);
-        
+                tableRules);
+        System.out.println(nm.dbNodes());
         nm =
             new DefaultNodeManager(new MysqlDbParse(), "jdbc:mysql://192.168.1.[1-8]:3306/useradmin_inst_[1-8]",
-                tableDescs);
-        
+                tableRules);
+        System.out.println(nm.dbNodes());
         nm =
             new DefaultNodeManager(new MysqlDbParse(), "jdbc:mysql://192.168.1.[1-8]:3306/useradmin_inst_[1-8]",
-                tableDescs);
+                tableRules);
         
         System.out.println(nm.dbNodes());
     }
