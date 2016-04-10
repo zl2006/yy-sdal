@@ -17,6 +17,8 @@ import javax.sql.DataSource;
 import org.apache.commons.beanutils.BeanUtils;
 import org.yy.dal.ds.holder.ConnectionHolder;
 import org.yy.dal.ds.support.YYDalConnectionNotSupport;
+import org.yy.dal.parse.parser.CCJSqlParserUtil;
+import org.yy.dal.parse.statement.Statement;
 
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 
@@ -342,6 +344,13 @@ public class YYDalConnection extends YYDalConnectionNotSupport implements Connec
     
     public static void main(String[] args)
         throws Exception {
+        
+        
+        String sql = "select a, b, (select count(*) from TEST) from bb , aa where aa.a1 = bb.b1 ";
+        Statement statement = CCJSqlParserUtil.parse(sql);
+        statement.toString();
+        
+        
         Map<String, String> testMap = new HashMap<String, String>();
         testMap.put("driverClass", "com.mysql.jdbc.Driver");
         testMap.put("jdbcUrl", "jdbc:mysql://localhost:3306/useradmin_inst?useUnicode=true&characterEncoding=UTF8");
@@ -355,13 +364,13 @@ public class YYDalConnection extends YYDalConnectionNotSupport implements Connec
         List<String> tableDescs = new ArrayList<String>();
         tableDescs.add("user_[8]:hash(user_id)");
         tableDescs.add("qrcode_[8]:customFunc(qrcode_str)");
-        tableDescs.add("TB_PQ_QRCODE_[8]:hash(QRCODE)");
+        tableDescs.add("TB_PQ_QRCODE_[3]:hash(QRCODE)");
         
         com.mchange.v2.c3p0.ComboPooledDataSource defaultDs = new ComboPooledDataSource();
         BeanUtils.populate(defaultDs, testMap);
         DataSource ds =
             new YYDalDatasource(defaultDs, testMap, "com.mchange.v2.c3p0.ComboPooledDataSource", "c3p0", "mysql",
-                "jdbc:mysql://127.0.0.1:3306/useradmin_inst_[0-7]", tableDescs);
+                "jdbc:mysql://127.0.0.1:3306/useradmin_inst_[0-2]", tableDescs);
         
         Connection connection = ds.getConnection();
         connection.setAutoCommit(true);
@@ -387,11 +396,11 @@ public class YYDalConnection extends YYDalConnectionNotSupport implements Connec
         ps =
             connection.prepareStatement("INSERT INTO `TB_SYS_USER` " + "(" + "`USER_NAME`, " + "`PWD`," + "`ROLE`,"
                 + "`MOBILE`," + "`EMAIL`," + "`STATUS`," + "`METO`)" + "VALUES" + "(" + "'zhouliang1'," + "'11041218',"
-                + "'admin'," + "'18665867002'," + "'zhouliang1@tydic.com'," + "1," + "'备注1')");
+                + "'admin'," + "'13428745286'," + "'18723351@tydic.com'," + "1," + "'备注1')");
         ps.execute();
         connection.setAutoCommit(false);
-        ps = connection.prepareStatement("DELETE FROM TB_SYS_USER");
-        ps.execute();
+        //ps = connection.prepareStatement("DELETE FROM TB_SYS_USER");
+        //ps.execute();
         connection.commit();
         ps = connection.prepareStatement("DELETE FROM TB_PQ_QRCODE");
         ps.execute();

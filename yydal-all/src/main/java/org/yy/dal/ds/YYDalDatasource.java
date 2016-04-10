@@ -23,7 +23,7 @@ import org.yy.dal.nm.parse.MysqlDbParse;
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 
 /**
- * 分库分表数据源
+ * 分库分表数据源,暂时仅支持mysql,如要支持其它可扩展Parse解析器
  * 
  * @author  zhouliang
  * @version  [1.0, 2016年2月17日]
@@ -48,16 +48,6 @@ public class YYDalDatasource implements DataSource {
      * 数据源类，如：com.mchange.v2.c3p0.ComboPooledDataSource，org.apache.commons.dbcp.BasicDataSource等
      */
     private String dataSourceClass;
-    
-    /**
-     * 分库节点描述，分号隔开。 例如：jdbc:mysql://127.0.0.1:3306/useradmin_inst_[1-4]
-     */
-    private String dbnodeListDesc;
-    
-    /**
-     * 分表描述， 例如：user_[8]:hash(user_id)
-     */
-    private List<String> tableListDescs;
     
     /**
      * 分库数据源，每个实例一个数据源
@@ -94,27 +84,25 @@ public class YYDalDatasource implements DataSource {
      * @param dataSourceClass 数据源类
      * @param dsType 数据源类型， 暂时支持c3p0, dbcp
      * @param dbType 数据库类型，暂时支持mysql
-     * @param dbnodeListDesc 分库节点描述
-     * @param tableListDescs 分表描述
+     * @param dbnodeDef 分库节点定义
+     * @param tableRuleDefs 分表定义
      */
     public YYDalDatasource(DataSource defaultDataSource, Map<String, String> dataSourceConfig, String dataSourceClass,
-        String dsType, String dbType, String dbnodeListDesc, List<String> tableListDescs) {
+        String dsType, String dbType, String dbnodeDef, List<String> tableRuleDefs) {
         this.defaultDataSource = defaultDataSource;
         this.dataSourceConfig = dataSourceConfig;
         this.dataSourceClass = dataSourceClass;
-        this.dbnodeListDesc = dbnodeListDesc;
-        this.tableListDescs = tableListDescs;
         this.dbType = dbType;
         this.dsType = dsType;
         
-        if (DBType.MYSQL.value().equals(this.dbType)) { //mysql解析
-            dbnodeManager = new DefaultNodeManager(new MysqlDbParse(), dbnodeListDesc, tableListDescs);
+        if (DBType.MYSQL.value().equals(this.dbType)) { //mysql解析，TODO 要改成builder模式
+            dbnodeManager = new DefaultNodeManager(new MysqlDbParse(), dbnodeDef, tableRuleDefs);
         }
         else {
             throw new RuntimeException("不支持的数据库类型:" + this.dbType);
         }
         
-        //根据数据库实例数产生数据源
+        //根据数据库实例数产生数据源, TODO 要改成builder模式
         try {
             datasource = new DataSource[dbnodeManager.dbInstances().size()];
             int i = 0;
@@ -217,15 +205,15 @@ public class YYDalDatasource implements DataSource {
     /**
      * 节点及实例描述
      */
-    public String getDbnodeListDesc() {
-        return dbnodeListDesc;
+    public String getDbnodeDef() {
+        return dbnodeManager.getDbnodeDef();
     }
     
     /**
      * 分表及规则描述
      */
-    public List<String> getTableListDescs() {
-        return tableListDescs;
+    public List<String> getTableRuleDefs() {
+        return dbnodeManager.getTableRuleDefs();
     }
     
     /**
@@ -274,8 +262,7 @@ public class YYDalDatasource implements DataSource {
     @Override
     public String toString() {
         return "YYDalDatasource [dataSourceConfig=" + dataSourceConfig + ", dataSourceClass=" + dataSourceClass
-            + ", dbnodeListDesc=" + dbnodeListDesc + ", tableListDescs=" + tableListDescs + ", dbType=" + dbType
-            + ", dsType=" + dsType + "]";
+            + ", dbnodeManager=" + dbnodeManager + ", dbType=" + dbType + ", dsType=" + dsType + "]";
     }
     
     public static void main(String[] args)
