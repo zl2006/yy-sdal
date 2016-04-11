@@ -12,7 +12,6 @@ import java.sql.Connection;
 import java.util.List;
 
 import org.yy.dal.ds.YYDalParameter;
-import org.yy.dal.nm.DbTable;
 import org.yy.dal.parse.statement.Statement;
 import org.yy.dal.route.Partition;
 
@@ -28,30 +27,26 @@ public class YYDalExecutorContext {
     //所使用的连接
     private List<Connection> conns;
     
-    //sql参数值
-    private List<YYDalParameter> params;
-    
     //sql语句
     private String sql;
     
     //sql解析后的语句
     private Statement statement;
     
-    //分表
-    private DbTable table;
+    //sql参数值
+    private List<YYDalParameter> params;
     
     //分库分表信息
     private Partition partition;
     
     /** 
     */
-    public YYDalExecutorContext(List<Connection> conns, List<YYDalParameter> params, String sql, Statement statement,
-        DbTable table, Partition partition) {
+    public YYDalExecutorContext(List<Connection> conns, String sql, Statement statement, List<YYDalParameter> params,
+        Partition partition) {
         this.sql = sql;
         this.statement = statement;
         this.conns = conns;
         this.params = params;
-        this.table = table;
         this.partition = partition;
     }
     
@@ -85,14 +80,6 @@ public class YYDalExecutorContext {
     
     public void setParams(List<YYDalParameter> params) {
         this.params = params;
-    }
-    
-    public DbTable getTable() {
-        return table;
-    }
-    
-    public void setTable(DbTable table) {
-        this.table = table;
     }
     
     public Partition getPartition() {

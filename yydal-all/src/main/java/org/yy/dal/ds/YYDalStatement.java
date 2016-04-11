@@ -18,14 +18,13 @@ import java.util.Map;
 import org.yy.dal.ds.constants.StatementMode;
 import org.yy.dal.executor.YYDalExecutorContext;
 import org.yy.dal.executor.YYDalStatementExecutor;
-import org.yy.dal.nm.DbTable;
 import org.yy.dal.parse.JSQLParserException;
-import org.yy.dal.parse.expression.Expression;
 import org.yy.dal.parse.parser.CCJSqlParserUtil;
 import org.yy.dal.parse.schema.Table;
 import org.yy.dal.route.Partition;
 import org.yy.dal.util.PartitionUtil;
 import org.yy.dal.util.SqlUtil;
+import org.yy.dal.util.Where;
 
 /**
 * <一句话功能简述>
@@ -149,15 +148,14 @@ public class YYDalStatement extends AbsYYDalStatement implements Statement {
         
         //Step 2, 获取最终选择的实例及分表信息
         Map<String, Table> tables = SqlUtil.getTables(statement); //取语句中用到的表
-        Map<String, Expression> whereColumns = SqlUtil.getWhere(statement); //取语句中where的列
-        DbTable dbtable = PartitionUtil.partitionTable(tables, datasource.getDbnodeManager()); //取到第一个分库表信息，TODO 有bug,不能是第一个，要取出所有的，并取出参数值范围最小的那个
+        Map<String, Where> whereColumns = SqlUtil.getWhere(statement); //取语句中where的列
         Partition partition = PartitionUtil.partition(tables, whereColumns, datasource.getDbnodeManager());
         
         //Step 3, 获取当前sql所要的数据库连接
         List<Connection> conns = fetchConnection(partition, connection);
         
         //Step 4, 执行并返回结果 
-        YYDalExecutorContext executorCtx = new YYDalExecutorContext(conns, null, this.sql, statement, dbtable, partition);
+        YYDalExecutorContext executorCtx = new YYDalExecutorContext(conns, this.sql, statement, null, partition);
         return executorCtx;
     }
     

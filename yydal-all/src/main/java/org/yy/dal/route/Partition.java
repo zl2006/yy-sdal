@@ -8,6 +8,10 @@
 */
 package org.yy.dal.route;
 
+import org.yy.dal.nm.DbTable;
+import org.yy.dal.parse.schema.Column;
+import org.yy.dal.parse.schema.Table;
+
 /**
 * 分库分表结果
 * 
@@ -23,9 +27,25 @@ public class Partition {
     //第几个分表
     private int tableNumber;
     
-    public Partition(int instNumber, int tableNumber) {
+    //分表信息
+    private Table table;
+    
+    //列
+    private Column column;
+    
+    //值
+    private Object columnValue;
+    
+    //路由规则 
+    private DbTable tableRule;
+    
+    public Partition(int instNumber, int tableNumber, Table table, Column column, Object columnValue, DbTable tableRule) {
         this.instNumber = instNumber;
         this.tableNumber = tableNumber;
+        this.table = table;
+        this.column = column;
+        this.columnValue = columnValue;
+        this.tableRule = tableRule;
     }
     
     /**
@@ -40,6 +60,41 @@ public class Partition {
     */
     public int getTableNumber() {
         return tableNumber;
+    }
+    
+    /**
+    * @return 返回 table
+    */
+    public Table getTable() {
+        return table;
+    }
+    
+    /**
+    * @return 返回 column
+    */
+    public Column getColumn() {
+        return column;
+    }
+    
+    /**
+    * @return 返回 columnValue
+    */
+    public Object getColumnValue() {
+        return columnValue;
+    }
+    
+    /**
+    * @return 返回 tableRule
+    */
+    public DbTable getTableRule() {
+        return tableRule;
+    }
+    
+    /**
+    * @param 对tableRule进行赋值
+    */
+    public void setTableRule(DbTable tableRule) {
+        this.tableRule = tableRule;
     }
     
 }

@@ -14,7 +14,6 @@ import java.util.Set;
 
 import org.yy.dal.nm.DbNodeManager;
 import org.yy.dal.nm.DbTable;
-import org.yy.dal.parse.expression.Expression;
 import org.yy.dal.parse.schema.Table;
 import org.yy.dal.route.Partition;
 import org.yy.dal.route.algorithm.HashPartitionAlgorithm;
@@ -31,47 +30,53 @@ public final class PartitionUtil {
     
     private static Map<String, PartitionAlgorithm> algorithms = new HashMap<String, PartitionAlgorithm>();
     
-    //注册算法
+    //初始化内置的hash算法
     static {
-        algorithms.put("hash", new HashPartitionAlgorithm());
+        register(new HashPartitionAlgorithm());
+    }
+    
+    //注册分库分表路由算法
+    public static void register(PartitionAlgorithm partitionAlgorigthm) {
+        algorithms.put(partitionAlgorigthm.getName(), partitionAlgorigthm);
     }
     
     /**
-     * 取匹配到的第一个分库表
+     * 根据指定sql获取分区， 详见PartitionAlgorithm类。尽量将
      */
-    public static DbTable partitionTable(Map<String, Table> tables, DbNodeManager nodeManager) {
-        Map<String, DbTable> dbtables = nodeManager.dbTables();
-        //Step 1 : 当sql中没有表或没有定义分表时，返回null
-        if (tables == null || tables.size() == 0 || dbtables == null || dbtables.size() == 0) {
-            return null;
-        }
-        Set<String> tableNames = tables.keySet();
-        
-        for (String tableName : tableNames) {
-            tableName = tableName.replace("`", "");
-            if (dbtables.get(tableName) != null) {
-                return dbtables.get(tableName);
-            }
-        }
-        return null;
-    }
-    
-    /**
-     * 根据指定sql获取分区， 详见PartitionAlgorithm类
-     */
-    public static Partition partition(Map<String, Table> tables, Map<String, Expression> whereColumns,
+    public static Partition partition(Map<String, Table> tables, Map<String, Where> whereColumns,
         DbNodeManager nodeManager) {
         
-        DbTable dbtable = partitionTable(tables, nodeManager);
+        Partition partition = null;
         
-        //Step 1 : 当sql中没有表或没有定义分表时，返回null, 使用默认数据库实例操作
-        if (dbtable == null) {
+        //Step 1 : 当sql中没有表或没有定义分表规则时，返回null
+        Map<String, DbTable> tableRules = nodeManager.dbTables();
+        if (tables == null || tables.size() == 0 || tableRules == null || tableRules.size() == 0) {
             return null;
         }
         
-        //Step 2 : 使用指定分表及where条件来选择数据库实例及分表
-        String ruleName = dbtable.getRuleName();
-        return algorithms.get(ruleName).calculate(tables, whereColumns, nodeManager);
+        //Step 2 : 遍历所有分库表，获取第一个匹配上的分库分表信息 
+        Set<String> tableNames = tables.keySet();
+        for (String tableName : tableNames) {
+            tableName = tableName.replace("`", "");
+            DbTable tableRule = tableRules.get(tableName);
+            if (tableRule != null) {
+                String ruleName = tableRule.getRuleName();
+                Partition temp =
+                    algorithms.get(ruleName).calculate(tables.get(tableName), whereColumns, tableRule, nodeManager);//使用指定分表及where条件来选择数据库实例及分表
+                if( temp == null){//尽量找到最佳匹配分表
+                    continue;
+                }
+                if ( partition == null ){
+                    partition = temp;
+                    continue;
+                }
+                if( temp.getInstNumber() > partition.getInstNumber()){
+                    partition = temp;
+                    break;
+                }
+            }
+        }
+        return partition;
         
     }
 }

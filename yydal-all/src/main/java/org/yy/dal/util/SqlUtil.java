@@ -84,7 +84,7 @@ public final class SqlUtil {
      * 
      * 注：返回数据为字段名+值，字段名的形式为名称或别名.名称, 如:QRCODE或a.QRCODE
      */
-    public static Map<String, Expression> getWhere(Statement statement) {
+    public static Map<String, Where> getWhere(Statement statement) {
         try {
             if (statement instanceof Select && ((Select)statement).getSelectBody() instanceof PlainSelect) { //解析select语句
                 PlainSelect ps = (PlainSelect)((Select)statement).getSelectBody();
@@ -100,7 +100,7 @@ public final class SqlUtil {
                 return getWhere(((Delete)statement).getWhere());
             }
             else {
-                return new HashMap<String, Expression>();
+                return new HashMap<String, Where>();
             }
         }
         catch (Exception ex) {
@@ -113,7 +113,7 @@ public final class SqlUtil {
      * 
      * 注：返回数据为字段名+值，字段名的形式为名称或别名.名称, 如:QRCODE或a.QRCODE
      */
-    public static Map<String, Expression> getWhere(String sql)
+    public static Map<String, Where> getWhere(String sql)
         throws Exception {
         try {
             Statement statement = CCJSqlParserUtil.parse(sql);
@@ -128,7 +128,7 @@ public final class SqlUtil {
         Map<String, Table> result = new HashMap<String, Table>();
         if (ps.getFromItem() instanceof Table) {
             Table t = (Table)ps.getFromItem();
-            result.put(t.getName().toUpperCase(), t);
+            result.put(orgiTableName(t).toUpperCase(), t);
         }
         
         if (ps.getJoins() == null) {
@@ -137,7 +137,7 @@ public final class SqlUtil {
         for (Join join : ps.getJoins()) {
             if (join.getRightItem() instanceof Table) {
                 Table t = (Table)join.getRightItem();
-                result.put(t.getName().toUpperCase(), t);
+                result.put(orgiTableName(t).toUpperCase(), t);
             }
         }
         return result;
@@ -149,14 +149,14 @@ public final class SqlUtil {
             return result;
         }
         for (Table table : tables) {
-            result.put(table.getName().toUpperCase().replace("`", ""), table);
+            result.put(orgiTableName(table).toUpperCase(), table);
         }
         return result;
     }
     
-    private static Map<String, Expression> getInsertColumn(Insert insert)
+    private static Map<String, Where> getInsertColumn(Insert insert)
         throws Exception {
-        Map<String, Expression> result = new HashMap<String, Expression>();
+        Map<String, Where> result = new HashMap<String, Where>();
         int i = 0;
         List<Expression> expressions = ((ExpressionList)insert.getItemsList()).getExpressions(); //插入的值
         
@@ -167,17 +167,17 @@ public final class SqlUtil {
             if (temp.getClass().getName().endsWith("Value")) { //插入的值为【值、?、命名参数】时才记录
                 String name = column.toString();
                 //Object value = BeanUtils.getProperty(expressions.get(i), "value");
-                result.put(name.toUpperCase().replace("`", ""), expressions.get(i));
+                result.put(name.toUpperCase().replace("`", ""), new Where(column, expressions.get(i)));
             }
             ++i;
         }
         return result;
     }
     
-    private static Map<String, Expression> getWhere(Expression expression)
+    private static Map<String, Where> getWhere(Expression expression)
         throws Exception {
         
-        Map<String, Expression> result = new HashMap<String, Expression>();
+        Map<String, Where> result = new HashMap<String, Where>();
         if (expression == null) {
             return result;
         }
@@ -197,7 +197,7 @@ public final class SqlUtil {
                 if (left instanceof Column && right.getClass().getName().endsWith("Value")) {
                     String name = left.toString();
                     //Object value = BeanUtils.getProperty(right, "value");
-                    result.put(name.toUpperCase(), right);
+                    result.put(name.toUpperCase(), new Where((Column)left, right));
                 }
             }
             else if (temp instanceof OldOracleJoinBinaryExpression) { //跳过 < <= > >=等逻辑处理
@@ -212,12 +212,16 @@ public final class SqlUtil {
         return result;
     }
     
+    public static String orgiTableName(Table table){
+        return table.getName().replace("`", "");
+    }
+    
     public static void main(String[] args)
         throws Exception {
         
         String sql = "SELECT QRCODE_ID, QRCODE, STATUS from TB_PQ_QRCODE where STATUS = 1";
         Map<String, Table> tables = SqlUtil.getTables(sql);
-        Map<String, Expression> wheres = SqlUtil.getWhere(sql);
+        Map<String, Where> wheres = SqlUtil.getWhere(sql);
         
         sql = "SELECT QRCODE_ID, QRCODE, STATUS from TB_PQ_QRCODE a where a.STATUS = 1";
         tables = SqlUtil.getTables(sql);

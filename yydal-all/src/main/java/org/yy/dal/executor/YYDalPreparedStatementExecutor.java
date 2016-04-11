@@ -17,6 +17,7 @@ import java.util.List;
 
 import org.yy.dal.ds.YYDalPreparedStatement;
 import org.yy.dal.route.Partition;
+import org.yy.dal.util.SqlUtil;
 
 /**
 * Sql执行器
@@ -38,9 +39,13 @@ public class YYDalPreparedStatementExecutor extends AbsYYDalExecutor {
                 return ps.executeQuery();
             }
             else if (partition.getInstNumber() > -1) { //使用分库分表的某个实例执行
-                String tableName = executorCtx.getTable().getTableName();
-                String tempSql = executorCtx.getSql();
-                tempSql = tempSql.replaceAll("(?i:" + tableName + ")", tableName + "_" + partition.getTableNumber());
+                //String tableName = executorCtx.getTable().getTableName();
+                //String tempSql = executorCtx.getSql();
+                //tempSql = tempSql.replaceAll("(?i:" + tableName + ")", tableName + "_" + partition.getTableNumber());
+                String tableName = SqlUtil.orgiTableName(partition.getTable());// partition.getTable().getName();
+                partition.getTable().setName(tableName + "_" + partition.getTableNumber());
+                String tempSql = executorCtx.getStatement().toString();
+                
                 Connection conn = executorCtx.getConns().get(0);
                 PreparedStatement ps = createPreparedStatement(tempSql, conn, dalPreparedStatement);
                 setParams(ps, executorCtx.getParams());
@@ -48,11 +53,16 @@ public class YYDalPreparedStatementExecutor extends AbsYYDalExecutor {
             }
             else {
                 //TODO 处理多个结果集的返回
-                String tableName = executorCtx.getTable().getTableName();
+                //String tableName = executorCtx.getTable().getTableName();
+                String tableName = SqlUtil.orgiTableName(partition.getTable());
+                
                 List<ResultSet> results = new ArrayList<ResultSet>(); //使用分为分表的所有实例执行
                 for (int i = 0; i < executorCtx.getConns().size(); ++i) {
-                    for (int j = 0; j < executorCtx.getTable().getTableNum(); ++j) {
-                        String tempSql = executorCtx.getSql().replaceAll("(?i:" + tableName + ")", tableName + "_" + j);
+                    for (int j = 0; j < partition.getTableRule().getTableNum(); ++j) {
+                        //String tempSql = executorCtx.getSql().replaceAll("(?i:" + tableName + ")", tableName + "_" + j);
+                        partition.getTable().setName(tableName + "_" + j);
+                        String tempSql = executorCtx.getStatement().toString();
+                        
                         Connection conn = executorCtx.getConns().get(i);
                         PreparedStatement ps = createPreparedStatement(tempSql, conn, dalPreparedStatement);
                         setParams(ps, executorCtx.getParams());
@@ -80,19 +90,29 @@ public class YYDalPreparedStatementExecutor extends AbsYYDalExecutor {
                 total = ps.executeUpdate();
             }
             else if (partition.getInstNumber() > -1) { //使用分库分表的某个实例执行
-                String tableName = executorCtx.getTable().getTableName();
-                String tempSql = executorCtx.getSql();
-                tempSql = tempSql.replaceAll("(?i:" + tableName + ")", tableName + "_" + partition.getTableNumber());
+                //String tableName = executorCtx.getTable().getTableName();
+                //String tempSql = executorCtx.getSql();
+                //tempSql = tempSql.replaceAll("(?i:" + tableName + ")", tableName + "_" + partition.getTableNumber());
+                String tableName = SqlUtil.orgiTableName(partition.getTable());
+                partition.getTable().setName(tableName + "_" + partition.getTableNumber());
+                String tempSql = executorCtx.getStatement().toString();
+                
                 Connection conn = executorCtx.getConns().get(0);
                 PreparedStatement ps = createPreparedStatement(tempSql, conn, dalPreparedStatement);
                 setParams(ps, executorCtx.getParams());
                 total = ps.executeUpdate();
             }
             else {
-                String tableName = executorCtx.getTable().getTableName();
+                //String tableName = executorCtx.getTable().getTableName();
+                String tableName = SqlUtil.orgiTableName(partition.getTable());
+                
                 for (int i = 0; i < executorCtx.getConns().size(); ++i) {
-                    for (int j = 0; j < executorCtx.getTable().getTableNum(); ++j) {
-                        String tempSql = executorCtx.getSql().replaceAll("(?i:" + tableName + ")", tableName + "_" + j);
+                    //for (int j = 0; j < executorCtx.getTable().getTableNum(); ++j) {
+                    for (int j = 0; j < partition.getTableRule().getTableNum(); ++j) {
+                        //String tempSql = executorCtx.getSql().replaceAll("(?i:" + tableName + ")", tableName + "_" + j);
+                        partition.getTable().setName(tableName + "_" + j);
+                        String tempSql = executorCtx.getStatement().toString();
+                        
                         Connection conn = executorCtx.getConns().get(i);
                         PreparedStatement ps = createPreparedStatement(tempSql, conn, dalPreparedStatement);
                         setParams(ps, executorCtx.getParams());
@@ -120,19 +140,30 @@ public class YYDalPreparedStatementExecutor extends AbsYYDalExecutor {
                 result = ps.execute();
             }
             else if (partition.getInstNumber() > -1) { //使用分库分表的某个实例执行
-                String tableName = executorCtx.getTable().getTableName();
-                String tempSql = executorCtx.getSql();
-                tempSql = tempSql.replaceAll("(?i:" + tableName + ")", tableName + "_" + partition.getTableNumber());
+//                String tableName = executorCtx.getTable().getTableName();
+//                String tempSql = executorCtx.getSql();
+//                tempSql = tempSql.replaceAll("(?i:" + tableName + ")", tableName + "_" + partition.getTableNumber());
+                String tableName = SqlUtil.orgiTableName(partition.getTable());
+                partition.getTable().setName(tableName + "_" + partition.getTableNumber());
+                String tempSql = executorCtx.getStatement().toString();
+                
                 Connection conn = executorCtx.getConns().get(0);
                 PreparedStatement ps = createPreparedStatement(tempSql, conn, dalPreparedStatement);
                 setParams(ps, executorCtx.getParams());
                 result = ps.execute();
             }
             else {
-                String tableName = executorCtx.getTable().getTableName();
+                //String tableName = executorCtx.getTable().getTableName();
+                String tableName = SqlUtil.orgiTableName(partition.getTable());
+                
                 for (int i = 0; i < executorCtx.getConns().size(); ++i) {
-                    for (int j = 0; j < executorCtx.getTable().getTableNum(); ++j) {
-                        String tempSql = executorCtx.getSql().replaceAll("(?i:" + tableName + ")", tableName + "_" + j);
+                    //for (int j = 0; j < executorCtx.getTable().getTableNum(); ++j) {
+                    for (int j = 0; j < partition.getTableRule().getTableNum(); ++j) {
+                        
+                        //String tempSql = executorCtx.getSql().replaceAll("(?i:" + tableName + ")", tableName + "_" + j);
+                        partition.getTable().setName(tableName + "_" + j);
+                        String tempSql = executorCtx.getStatement().toString();
+                        
                         Connection conn = executorCtx.getConns().get(i);
                         PreparedStatement ps = createPreparedStatement(tempSql, conn, dalPreparedStatement);
                         setParams(ps, executorCtx.getParams());

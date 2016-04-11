@@ -11,9 +11,10 @@ package org.yy.dal.route.algorithm;
 import java.util.Map;
 
 import org.yy.dal.nm.DbNodeManager;
-import org.yy.dal.parse.expression.Expression;
+import org.yy.dal.nm.DbTable;
 import org.yy.dal.parse.schema.Table;
 import org.yy.dal.route.Partition;
+import org.yy.dal.util.Where;
 
 /**
 * 分区算法
@@ -25,13 +26,21 @@ import org.yy.dal.route.Partition;
 public interface PartitionAlgorithm {
     
     /**
-     * 分区计算
-     * @param tables   sql语句中的表
-     * @param whereColums where中的列或insert中的列
-     * @return 共两个值，第一个返回第几个数据库实例，第二个值返回第几个分表。
-     * 返回空表示无分库分表信息，应用需要查询默认实例。
-     * 返回[-1,-1]时，表示有分表但没带路由规则, 应用需求查询所有实例。
+     * 算法名称
      */
-    public Partition calculate(Map<String, Table> tables, Map<String, Expression> whereColumns,
+    public String getName();
+    
+    /**
+     * 分区计算,计算使用哪个实例哪个表
+     * 
+     * @param table 分库表
+     * @param whereColums where中的列或insert中的列
+     * @param tableRule 表路由规则 
+     * @return 共两个值，第一个返回第几个数据库实例，第二个值返回第几个分表。
+     * 返回空表示无分库分表信息，使用默认数据库实例。
+     * 返回[-1,-1]时，表示有分表但没带路由规则,使用所有定义的分库分表数据库实例。
+     * 返回[2,3]时，表示使用第3个实例，第4个分表
+     */
+    public Partition calculate(Table table, Map<String, Where> whereColumns, DbTable tableRule,
         DbNodeManager nodeManager);
 }

@@ -39,11 +39,9 @@ import javax.sql.DataSource;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.yy.dal.ds.constants.PreparedStatementMode;
-import org.yy.dal.executor.YYDalPreparedStatementExecutor;
 import org.yy.dal.executor.YYDalExecutorContext;
-import org.yy.dal.nm.DbTable;
+import org.yy.dal.executor.YYDalPreparedStatementExecutor;
 import org.yy.dal.parse.JSQLParserException;
-import org.yy.dal.parse.expression.Expression;
 import org.yy.dal.parse.parser.CCJSqlParserUtil;
 import org.yy.dal.parse.schema.Table;
 import org.yy.dal.parse.statement.Statement;
@@ -51,6 +49,7 @@ import org.yy.dal.route.Partition;
 import org.yy.dal.util.ParameterUtil;
 import org.yy.dal.util.PartitionUtil;
 import org.yy.dal.util.SqlUtil;
+import org.yy.dal.util.Where;
 
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 
@@ -233,16 +232,17 @@ public class YYDalPreparedStatement extends AbsYYDalStatement implements Prepare
         }
     }
     
+    //初始化执行器所需要的上下文参数
     protected YYDalExecutorContext initExecutorCtx()
         throws JSQLParserException, SQLException {
-        //Step 1, sql参数填充，以便分析sql时能正常取出分表字段的值
+        //Step 1, sql语句预处理
         String fillsql = ParameterUtil.fillParam(this.sql, this.paramValues);
-        Statement statement = CCJSqlParserUtil.parse(fillsql);
+        Statement fillStatement = CCJSqlParserUtil.parse(fillsql); //填充参数以便获取where条件的值
+        Statement targetStatement = CCJSqlParserUtil.parse(this.sql);
         
         //Step 2, 获取最终选择的实例及分表信息
-        Map<String, Table> tables = SqlUtil.getTables(statement); //取语句中用到的表
-        Map<String, Expression> whereColumns = SqlUtil.getWhere(statement); //取语句中where的列
-        DbTable dbtable = PartitionUtil.partitionTable(tables, datasource.getDbnodeManager());
+        Map<String, Table> tables = SqlUtil.getTables(targetStatement); //取语句中用到的表
+        Map<String, Where> whereColumns = SqlUtil.getWhere(fillStatement); //取语句中where的列，只有填充参数后的语句才能获取值。只有右值类型为xxxValue的类才会加入（表关联不加入）
         Partition partition = PartitionUtil.partition(tables, whereColumns, datasource.getDbnodeManager());
         
         //Step 3, 获取当前sql所要的数据库连接
@@ -250,8 +250,7 @@ public class YYDalPreparedStatement extends AbsYYDalStatement implements Prepare
         
         //Step 4, 执行并返回结果 
         YYDalExecutorContext param =
-            new YYDalExecutorContext(conns, this.paramValues, this.sql, CCJSqlParserUtil.parse(this.sql), dbtable,
-                partition);
+            new YYDalExecutorContext(conns, this.sql, targetStatement, this.paramValues, partition);
         
         return param;
     }

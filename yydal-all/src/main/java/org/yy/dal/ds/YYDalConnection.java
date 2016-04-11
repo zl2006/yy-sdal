@@ -375,7 +375,7 @@ public class YYDalConnection extends YYDalConnectionNotSupport implements Connec
         Connection connection = ds.getConnection();
         connection.setAutoCommit(true);
         PreparedStatement ps =
-            connection.prepareStatement("SELECT QRCODE_ID, QRCODE, STATUS, TIMES, BATCH_ID, BATCHPRD_ID, CREATEQR_ID, UPDATE_TIME, FSCAN_BUYER_NICK, FSCAN_TIME FROM TB_PQ_QRCODE a WHERE a.QRCODE = 'G2@dfd+dfQ'");
+            connection.prepareStatement("SELECT QRCODE_ID, QRCODE, STATUS, TIMES, BATCH_ID, BATCHPRD_ID, CREATEQR_ID, UPDATE_TIME, FSCAN_BUYER_NICK, FSCAN_TIME FROM `TB_PQ_QRCODE` a WHERE a.QRCODE = 'G2@dfd+dfQ'");
         ps.executeQuery();
         ps =
             connection.prepareStatement("SELECT QRCODE_ID, QRCODE, STATUS, TIMES, BATCH_ID, BATCHPRD_ID, CREATEQR_ID, UPDATE_TIME, FSCAN_BUYER_NICK, FSCAN_TIME FROM TB_PQ_QRCODE WHERE QRCODE = '9VdZ12d+dfQ'");
@@ -384,7 +384,7 @@ public class YYDalConnection extends YYDalConnectionNotSupport implements Connec
         ps.executeQuery();
         ps = connection.prepareStatement("SELECT * FROM `TB_SYS_USER`");
         ps.executeQuery();
-        ps = connection.prepareStatement("UPDATE TB_PQ_QRCODE a set a.TIMES=a.TIMES+1 WHERE a.QRCODE='12@dfd+dfQ'");
+        ps = connection.prepareStatement("UPDATE `TB_PQ_QRCODE` a set a.TIMES=a.TIMES+1 WHERE a.QRCODE='12@dfd+dfQ'");
         ps.executeUpdate();
         ps = connection.prepareStatement("UPDATE TB_PQ_QRCODE set TIMES=TIMES+1");
         ps.executeUpdate();
@@ -407,6 +407,16 @@ public class YYDalConnection extends YYDalConnectionNotSupport implements Connec
         ps =
             connection.prepareStatement("INSERT INTO `TB_PQ_QRCODE`" + "(`QRCODE`," + "`STATUS`," + "`TIMES`,"
                 + "`BATCH_ID`)" + "VALUES(" + "'12@dfd+dfQ'," + "0," + "4," + "1211)");
+        ps.execute();
+        
+        ps =
+            connection.prepareStatement("INSERT INTO `TB_PQ_QRCODE`" + "(`QRCODE`," + "`STATUS`," + "`TIMES`,"
+                + "`BATCH_ID`)" + "VALUES(" + "'9VdZ12d+dfQ'," + "0," + "4," + "1211)");
+        ps.execute();
+        
+        ps =
+            connection.prepareStatement("INSERT INTO `TB_PQ_QRCODE`" + "(`QRCODE`," + "`STATUS`," + "`TIMES`,"
+                + "`BATCH_ID`)" + "VALUES(" + "'G2@dfd+dfQ'," + "0," + "4," + "1211)");
         ps.execute();
         connection.commit();
         
