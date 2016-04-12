@@ -47,6 +47,9 @@ public abstract class AbsYYDalExecutor {
         
         for (int i = 1; i < params.size(); ++i) { //设置参数方法为1个参数时
             YYDalParameter item = params.get(i);
+            if(item == null){
+                continue;
+            }
             if (item.getNum() == 1) {
                 statement.getClass()
                     .getMethod(item.getProperty(), int.class, item.getParam1().getClass())
