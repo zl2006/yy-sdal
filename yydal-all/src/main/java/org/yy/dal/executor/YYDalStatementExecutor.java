@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.yy.dal.ds.YYDalStatement;
+import org.yy.dal.merge.ResultSetBuilder;
 import org.yy.dal.route.Partition;
 
 /**
@@ -37,9 +38,6 @@ public class YYDalStatementExecutor extends AbsYYDalExecutor {
                 return ps.executeQuery(dalStatement.getSql());
             }
             else if (partition.getInstNumber() > -1) { //使用分库分表的某个实例执行
-//                String tableName = executorCtx.getTable().getTableName();
-//                String tempSql = executorCtx.getSql();
-//                tempSql = tempSql.replaceAll("(?i:" + tableName + ")", tableName + "_" + partition.getTableNumber());
                 String tableName = partition.getTable().getName();
                 partition.getTable().setName(tableName + "_" + partition.getTableNumber());
                 String tempSql = executorCtx.getStatement().toString();
@@ -49,29 +47,25 @@ public class YYDalStatementExecutor extends AbsYYDalExecutor {
                 return ps.executeQuery(tempSql);
             }
             else {
-                //TODO 处理多个结果集的返回
-//                String tableName = executorCtx.getTable().getTableName();
                 String tableName = partition.getTable().getName();
                 
                 List<ResultSet> results = new ArrayList<ResultSet>(); //使用分为分表的所有实例执行
                 for (int i = 0; i < executorCtx.getConns().size(); ++i) {
-//                    for (int j = 0; j < executorCtx.getTable().getTableNum(); ++j) {
-                      for (int j = 0; j < partition.getTableRule().getTableNum(); ++j) {
-//                      String tempSql = executorCtx.getSql().replaceAll("(?i:" + tableName + ")", tableName + "_" + j);
+                    for (int j = 0; j < partition.getTableRule().getTableNum(); ++j) {
                         partition.getTable().setName(tableName + "_" + j);
                         String tempSql = executorCtx.getStatement().toString();
-                          
+                        
                         Connection conn = executorCtx.getConns().get(i);
                         Statement ps = createStatement(conn, dalStatement);
                         results.add(ps.executeQuery(tempSql));
                     }
                 }
+                return ResultSetBuilder.build(executorCtx, results);
             }
         }
         catch (SQLException ex) {
             throw new RuntimeException(ex);
         }
-        return null;
     }
     
     public int executeUpdate(YYDalExecutorContext executorCtx, YYDalStatement dalStatement)
@@ -85,9 +79,9 @@ public class YYDalStatementExecutor extends AbsYYDalExecutor {
                 total = ps.executeUpdate(dalStatement.getSql());
             }
             else if (partition.getInstNumber() > -1) { //使用分库分表的某个实例执行
-//                String tableName = executorCtx.getTable().getTableName();
-//                String tempSql = executorCtx.getSql();
-//                tempSql = tempSql.replaceAll("(?i:" + tableName + ")", tableName + "_" + partition.getTableNumber());
+                //                String tableName = executorCtx.getTable().getTableName();
+                //                String tempSql = executorCtx.getSql();
+                //                tempSql = tempSql.replaceAll("(?i:" + tableName + ")", tableName + "_" + partition.getTableNumber());
                 String tableName = partition.getTable().getName();
                 partition.getTable().setName(tableName + "_" + partition.getTableNumber());
                 String tempSql = executorCtx.getStatement().toString();
@@ -97,13 +91,10 @@ public class YYDalStatementExecutor extends AbsYYDalExecutor {
                 total = ps.executeUpdate(tempSql);
             }
             else {
-//                String tableName = executorCtx.getTable().getTableName();
                 String tableName = partition.getTable().getName();
                 
                 for (int i = 0; i < executorCtx.getConns().size(); ++i) {
-//                    for (int j = 0; j < executorCtx.getTable().getTableNum(); ++j) {
                     for (int j = 0; j < partition.getTableRule().getTableNum(); ++j) {
-//                        String tempSql = executorCtx.getSql().replaceAll("(?i:" + tableName + ")", tableName + "_" + j);
                         partition.getTable().setName(tableName + "_" + j);
                         String tempSql = executorCtx.getStatement().toString();
                         Connection conn = executorCtx.getConns().get(i);
@@ -131,9 +122,6 @@ public class YYDalStatementExecutor extends AbsYYDalExecutor {
                 result = ps.execute(dalStatement.getSql());
             }
             else if (partition.getInstNumber() > -1) { //使用分库分表的某个实例执行
-//                String tableName = executorCtx.getTable().getTableName();
-//                String tempSql = executorCtx.getSql();
-//                tempSql = tempSql.replaceAll("(?i:" + tableName + ")", tableName + "_" + partition.getTableNumber());
                 String tableName = partition.getTable().getName();
                 partition.getTable().setName(tableName + "_" + partition.getTableNumber());
                 String tempSql = executorCtx.getStatement().toString();
@@ -143,14 +131,10 @@ public class YYDalStatementExecutor extends AbsYYDalExecutor {
                 result = ps.execute(tempSql);
             }
             else {
-//                String tableName = executorCtx.getTable().getTableName();
                 String tableName = partition.getTable().getName();
                 
                 for (int i = 0; i < executorCtx.getConns().size(); ++i) {
-//                    for (int j = 0; j < executorCtx.getTable().getTableNum(); ++j) {
                     for (int j = 0; j < partition.getTableRule().getTableNum(); ++j) {
-                        
-//                        String tempSql = executorCtx.getSql().replaceAll("(?i:" + tableName + ")", tableName + "_" + j);
                         partition.getTable().setName(tableName + "_" + j);
                         String tempSql = executorCtx.getStatement().toString();
                         
@@ -169,5 +153,4 @@ public class YYDalStatementExecutor extends AbsYYDalExecutor {
         return result;
     }
     
-
 }
