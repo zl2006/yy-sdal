@@ -680,7 +680,7 @@ public class YYDalPreparedStatement extends AbsYYDalStatement implements Prepare
         testMap.put("maxIdleTime", "160");
         
         List<String> tableDescs = new ArrayList<String>();
-        tableDescs.add("TB_USER_INFO_[3]:hash(USER_ID)");
+        //tableDescs.add("TB_SYS_USER[3]:hash(USER_ID)");
         tableDescs.add("TB_PQ_QRCODE_[3]:hash(QRCODE)");
         
         com.mchange.v2.c3p0.ComboPooledDataSource defaultDs = new ComboPooledDataSource();
@@ -697,16 +697,17 @@ public class YYDalPreparedStatement extends AbsYYDalStatement implements Prepare
         ps.clearParameters();
         rs = ps.executeQuery("select * from TB_PQ_QRCODE");
         
-        ps = connection.prepareStatement("SELECT * FROM TB_WLJ_QRCODE a WHERE a.QRCODE=?");
+        ps = connection.prepareStatement("SELECT * FROM TB_PQ_QRCODE a WHERE a.QRCODE=?");
+        ps.setString(1, "abcdef");
         rs = ps.executeQuery();
         
-        ps = connection.prepareStatement("SELECT * FROM TB_WLJ_QRCODE a WHERE a.QRCODE='abcdef'");
+        ps = connection.prepareStatement("SELECT * FROM TB_PQ_QRCODE a WHERE a.QRCODE='abcdef'");
         rs = ps.executeQuery();
         
-        ps = connection.prepareStatement("SELECT * FROM TB_WLJ_QRCODE a");
+        ps = connection.prepareStatement("SELECT * FROM TB_PQ_QRCODE a");
         rs = ps.executeQuery();
         
-        ps = connection.prepareStatement("SELECT * FROM TB_USER_INFO a WHERE a.USER_ID = '123' ");
+        ps = connection.prepareStatement("SELECT * FROM TB_SYS_USER a WHERE a.USER_ID = '123' ");
         rs = ps.executeQuery();
         
         rs.next();
