@@ -41,7 +41,12 @@ import org.yy.dal.parse.statement.update.Update;
 public final class SqlUtil {
     
     /**
-     * 获取sql中的数据库分表
+     * 获取sql中的数据库分表,暂时支持Select, Update, Insert, Delete四个DML语句
+     * 例如：
+     * select * from 【table】, select * from 【table1, table2】, select * from 【table1】 left join 【table2】
+     * update 【table】 set ...
+     * insert into【table】...
+     * delete from 【table】
      */
     public static Map<String, Table> getTables(Statement statement) {
         if (statement instanceof Select && ((Select)statement).getSelectBody() instanceof PlainSelect) {
@@ -49,17 +54,13 @@ public final class SqlUtil {
             return getTables(ps);
         }
         else if (statement instanceof Update) {
-            return getTables(((Update)statement).getTables());
+            return getTables((Update)statement);
         }
         else if (statement instanceof Insert) {
-            List<Table> tables = new ArrayList<Table>();
-            tables.add(((Insert)statement).getTable());
-            return getTables(tables);
+            return getTables((Insert)statement);
         }
         else if (statement instanceof Delete) {
-            List<Table> tables = new ArrayList<Table>();
-            tables.add(((Delete)statement).getTable());
-            return getTables(tables);
+            return getTables((Delete)statement);
         }
         else {
             return new HashMap<String, Table>();
@@ -67,7 +68,7 @@ public final class SqlUtil {
     }
     
     /**
-     * 获取sql中的数据库分表
+     * 获取sql中的数据库分表,暂时支持Select, Update, Insert, Delete四个DML语句
      */
     public static Map<String, Table> getTables(String sql) {
         try {
@@ -81,6 +82,12 @@ public final class SqlUtil {
     
     /**
      * 获取分表字段, 不支持子查询, 右值支持data,long,Timestamp,string等
+     * 例如：
+     * 
+     * select * from table where 【field1 = value1】
+     * insert into table（【field1】）values (【value1】)
+     * delete from table where 【field1 = value1】
+     * update table set ... where 【field1 = value1】
      * 
      * 注：返回数据为字段名+值，字段名的形式为名称或别名.名称, 如:QRCODE或a.QRCODE
      */
@@ -124,6 +131,7 @@ public final class SqlUtil {
         }
     }
     
+    //处理select语句
     private static Map<String, Table> getTables(PlainSelect ps) {
         Map<String, Table> result = new HashMap<String, Table>();
         if (ps.getFromItem() instanceof Table) {
@@ -143,6 +151,26 @@ public final class SqlUtil {
         return result;
     }
     
+    //处理update语句
+    private static Map<String, Table> getTables(Update update) {
+        return getTables(update.getTables());
+    }
+    
+    //处理Insert语句
+    private static Map<String, Table> getTables(Insert insert) {
+        List<Table> tables = new ArrayList<Table>();
+        tables.add(insert.getTable());
+        return getTables(tables);
+    }
+    
+    //处理Delete语句
+    private static Map<String, Table> getTables(Delete delete) {
+        List<Table> tables = new ArrayList<Table>();
+        tables.add(delete.getTable());
+        return getTables(tables);
+    }
+    
+    //处理通用的tables
     private static Map<String, Table> getTables(List<Table> tables) {
         Map<String, Table> result = new HashMap<String, Table>();
         if (tables == null) {
@@ -154,6 +182,7 @@ public final class SqlUtil {
         return result;
     }
     
+    //处理insert语句中的列
     private static Map<String, Where> getInsertColumn(Insert insert)
         throws Exception {
         Map<String, Where> result = new HashMap<String, Where>();
@@ -174,6 +203,7 @@ public final class SqlUtil {
         return result;
     }
     
+    //处理select , update, delete中的where部分
     private static Map<String, Where> getWhere(Expression expression)
         throws Exception {
         
@@ -212,7 +242,7 @@ public final class SqlUtil {
         return result;
     }
     
-    public static String orgiTableName(Table table){
+    public static String orgiTableName(Table table) {
         return table.getName().replace("`", "");
     }
     
