@@ -63,6 +63,7 @@ public class YYDalPreparedStatementExecutor extends AbsYYDalExecutor {
                         results.add(ps.executeQuery());
                     }
                 }
+                partition.getTable().setName(tableName );
                 return ResultSetBuilder.build(executorCtx, results);
             }
         }
@@ -107,6 +108,8 @@ public class YYDalPreparedStatementExecutor extends AbsYYDalExecutor {
                         total += ps.executeUpdate();
                     }
                 }
+                
+                partition.getTable().setName(tableName );
             }
         }
         catch (SQLException ex) {
@@ -153,6 +156,8 @@ public class YYDalPreparedStatementExecutor extends AbsYYDalExecutor {
                         }
                     }
                 }
+                
+                partition.getTable().setName(tableName );
             }
         }
         catch (SQLException ex) {

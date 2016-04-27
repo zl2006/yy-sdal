@@ -38,16 +38,31 @@ import org.yy.dal.ds.support.YYDalResultSetNotSupport;
 */
 public abstract class AbsYYDalResultSet extends YYDalResultSetNotSupport {
     
+    //当前读取的ResultSet
     private ResultSet currentRs;
     
+    //待读取的ResultSet
     private List<ResultSet> resultSets;
     
-    private boolean close;
+    //已读完的ResultSet
+    private List<ResultSet> finishResultSets;
     
+    //关闭状态
+    private boolean close;
     
     private boolean offsetSkipped;
     
     private int readCount;
+    
+    /** {@inheritDoc} */
+    @Override
+    public boolean next()
+        throws SQLException {
+        return false;
+    }
+    
+    //获取下一个Result
+    protected abstract boolean nextSharing();
     
     /** {@inheritDoc} */
     @Override

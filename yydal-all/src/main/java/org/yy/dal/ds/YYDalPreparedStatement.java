@@ -54,7 +54,7 @@ import org.yy.dal.util.Where;
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 
 /**
-* 分库分表statement
+* 分库分表statement, 分库表不支持group by语句
 * 
 * @author  zhouliang
 * @version  [1.0, 2016年2月18日]
@@ -386,7 +386,6 @@ public class YYDalPreparedStatement extends AbsYYDalStatement implements Prepare
     public void setObject(int parameterIndex, Object x, int targetSqlType)
         throws SQLException {
         paramValues.set(parameterIndex, new YYDalParameter("setObject", x, targetSqlType));
-        throw new SQLFeatureNotSupportedException();
     }
     
     /** {@inheritDoc} */

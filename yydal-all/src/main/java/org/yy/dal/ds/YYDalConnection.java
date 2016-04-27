@@ -380,7 +380,11 @@ public class YYDalConnection extends YYDalConnectionNotSupport implements Connec
         ps =
             connection.prepareStatement("SELECT QRCODE_ID, QRCODE, STATUS, TIMES, BATCH_ID, BATCHPRD_ID, CREATEQR_ID, UPDATE_TIME, FSCAN_BUYER_NICK, FSCAN_TIME FROM TB_PQ_QRCODE WHERE QRCODE = '9VdZ12d+dfQ'");
         ps.executeQuery();
-        ps = connection.prepareStatement("SELECT * FROM TB_PQ_QRCODE");
+        ps = connection.prepareStatement("SELECT * FROM TB_PQ_QRCODE ORDER BY QRCODE LIMIT 1, 10 ");
+        ps.executeQuery();
+        ps = connection.prepareStatement("SELECT 1");
+        ps.executeQuery();
+        ps = connection.prepareStatement("SELECT COUNT(1),qrcode FROM tb_pq_qrcode GROUP BY qrcode ORDER BY qrcode   LIMIT 1, 10 ");
         ps.executeQuery();
         ps = connection.prepareStatement("SELECT * FROM `TB_SYS_USER`");
         ps.executeQuery();
